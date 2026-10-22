@@ -1,0 +1,489 @@
+<!DOCTYPE html><html lang="ro"><head><meta charset="utf-8"><title>Radar</title><link rel="manifest" href="manifest.json"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Radar"><link rel="apple-touch-icon" href="icon.png">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0b0a;--p:#141412;--p2:#1e1d1a;--b:#2a2924;--t:#eeece4;--m:#8f8c80;--a:#d4ff3f;--a2:#d4ff3f;--g:#d4ff3f;--ok:#4ade80;--ink:#0b0b0a;--lime-d:#9fbf2a}
+*{box-sizing:border-box;margin:0}html,body{height:100%}
+body{font-family:"Segoe UI Variable Text","Segoe UI Variable","Segoe UI",Inter,system-ui,sans-serif;background:var(--bg);color:var(--t);display:flex;overflow:hidden;font-size:14px}
+body:before{content:"";position:fixed;inset:0;background:radial-gradient(900px 500px at 85% -10%,rgba(212,255,63,.22),transparent 60%),radial-gradient(700px 400px at 0% 110%,rgba(212,255,63,.14),transparent 60%);pointer-events:none}
+a{color:inherit;text-decoration:none}button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+aside{width:232px;flex:none;padding:22px 14px;border-right:1px solid var(--b);background:rgba(10,11,18,.7);backdrop-filter:blur(20px);display:flex;flex-direction:column;gap:4px;z-index:1}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;padding:0 10px 22px}.logo i{width:34px;height:34px;border-radius:10px;background:var(--g);display:grid;place-items:center;font-style:normal;box-shadow:0 6px 20px rgba(212,255,63,.45)}
+.nav{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:var(--m);font-weight:500;transition:.15s}.nav:hover{background:var(--p);color:var(--t)}.nav.on{background:var(--p2);color:var(--t);box-shadow:inset 2px 0 0 var(--a)}
+.nav .ni{font-style:normal}.nav .c{margin-left:auto;font-size:11px;background:var(--p2);padding:2px 8px;border-radius:20px}
+main{flex:1;display:flex;flex-direction:column;min-width:0;z-index:1}
+header{display:flex;align-items:center;gap:14px;padding:16px 28px;border-bottom:1px solid var(--b)}
+.search{flex:1;max-width:520px;display:flex;align-items:center;gap:8px;background:var(--p);border:1px solid var(--b);border-radius:12px;padding:9px 14px}.search input{flex:1;background:none;border:0;outline:0;color:var(--t);font:inherit}
+#view{flex:1;overflow:auto;padding:26px 28px 60px}
+h1{font-size:26px;font-weight:700;letter-spacing:-.02em}.sub{color:var(--m);margin:4px 0 22px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;background:var(--p2);border:1px solid var(--b);font-weight:600;font-size:13px;transition:.15s;white-space:nowrap}.btn:hover{background:rgba(255,255,255,.14)}.btn.pri{background:var(--g);border:0;box-shadow:0 6px 18px rgba(212,255,63,.35)}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
+.card{background:var(--p);border:1px solid var(--b);border-radius:18px;overflow:hidden;transition:.2s}.card:hover{transform:translateY(-3px);border-color:rgba(212,255,63,.5);box-shadow:0 14px 40px rgba(0,0,0,.4)}
+.pimg{aspect-ratio:1;background:#111 center/cover;position:relative}.pimg .ph{position:absolute;inset:0;display:grid;place-items:center;font-size:60px;background:var(--g)}
+.pc{padding:16px}.pc h3{font-size:16px}.price{font-weight:700;font-size:18px;margin-top:6px}.price s{color:var(--m);font-weight:400;font-size:13px;margin-left:6px}
+.badges{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}.bd{font-size:12px;padding:4px 10px;border-radius:20px;background:var(--p2);color:#cfd2e3}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:4px 10px 4px 4px;border-radius:30px;background:var(--p2);border:1px solid var(--b);font-size:12px;font-weight:600}.chip img,.chip .mini{width:26px;height:26px;border-radius:50%;object-fit:cover;background:var(--g)}.chip:hover{border-color:var(--a)}
+.ad{display:grid;grid-template-columns:1fr auto;gap:10px;padding:18px;background:var(--p);border:1px solid var(--b);border-radius:16px;margin-bottom:12px;transition:.15s}.ad:hover{border-color:rgba(212,255,63,.45)}
+.adh{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.adv{font-weight:700;font-size:16px}
+.hook{margin:12px 0 8px;font-size:15px;padding-left:12px;border-left:3px solid var(--a2);color:#eeece4}
+.meta{display:flex;gap:16px;color:var(--m);font-size:12.5px;flex-wrap:wrap}.meta b{color:var(--t)}
+.acts{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.flags{display:inline-flex;gap:4px;flex-wrap:wrap}.cc{font-size:10.5px;font-weight:700;padding:2px 6px;border-radius:6px;background:rgba(212,255,63,.18);color:#d4ff3f;letter-spacing:.04em}
+.hot{color:#fbbf24}
+.vg{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.vc{border-radius:14px;overflow:hidden;background:var(--p);border:1px solid var(--b);cursor:pointer;transition:.2s}.vc:hover{transform:translateY(-3px);border-color:var(--a)}
+.vt{aspect-ratio:9/14;background:#111;position:relative}.vt img{width:100%;height:100%;object-fit:cover;display:block}.vt:after{content:"▶";position:absolute;inset:auto auto 10px 10px;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);display:grid;place-items:center;font-size:12px}
+.vt .lk{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700}
+.vi{padding:10px 12px;font-size:12px}.vi b{display:block;font-size:13px}.vi span{color:var(--m);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+table{width:100%;border-collapse:separate;border-spacing:0;background:var(--p);border:1px solid var(--b);border-radius:16px;overflow:hidden}th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--b);vertical-align:top}th{color:var(--m);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.05em}tr:last-child td{border:0}tr:hover td{background:rgba(255,255,255,.025)}
+td .n{color:var(--m);font-size:12.5px;margin-top:3px}
+.hero{display:grid;grid-template-columns:320px 1fr;gap:28px;margin-bottom:26px}.hero .pimg{border-radius:20px;border:1px solid var(--b)}
+.back{color:var(--m);margin-bottom:16px;display:inline-block}.back:hover{color:var(--t)}
+.tabs{display:flex;gap:4px;background:var(--p);border:1px solid var(--b);padding:4px;border-radius:12px;width:max-content;margin-bottom:18px}.tab{padding:8px 16px;border-radius:9px;color:var(--m);font-weight:600}.tab.on{background:var(--p2);color:var(--t)}
+.stats{display:flex;gap:12px;margin-top:18px}.st{background:var(--p);border:1px solid var(--b);border-radius:14px;padding:12px 16px;min-width:100px}.st b{font-size:22px;display:block;background:var(--g);-webkit-background-clip:text;color:transparent}.st span{color:var(--m);font-size:12px}
+.empty{padding:50px;text-align:center;color:var(--m);border:1px dashed var(--b);border-radius:16px}.empty div{font-size:34px;margin-bottom:8px}
+.notes{max-width:720px}.msg{background:var(--p);border:1px solid var(--b);border-radius:14px 14px 14px 4px;padding:10px 14px;margin-bottom:10px}.msg small{color:var(--m);display:block;margin-bottom:3px;font-size:11px}
+.nin{display:flex;gap:8px;margin-top:12px}.nin textarea,.f input,.f textarea{flex:1;background:var(--p);border:1px solid var(--b);border-radius:12px;color:var(--t);padding:10px 12px;font:inherit;resize:vertical;outline:0;width:100%}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);display:none;place-items:center;z-index:9}.modal.on{display:grid}
+.mbox{background:#0f1018;border:1px solid var(--b);border-radius:18px;padding:18px;max-width:92vw;max-height:92vh;display:flex;gap:18px}
+.mbox video{max-height:80vh;max-width:50vw;border-radius:12px;background:#000}
+.f{display:grid;gap:10px;width:380px}
+::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:10px}
+.kb{display:grid;grid-template-columns:repeat(4,minmax(200px,1fr));gap:14px;align-items:start}.kcol{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:12px;min-height:200px}.kcol h4{margin:0 0 12px;display:flex;justify-content:space-between;font-size:13px;letter-spacing:.04em;text-transform:uppercase;opacity:.85}.pcard{cursor:pointer;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden;margin-bottom:12px;transition:transform .15s}.pcard:hover{transform:translateY(-2px);border-color:rgba(167,139,250,.5)}.pth{aspect-ratio:9/16;max-height:300px;width:100%;background:#111 center/cover;display:flex;align-items:center;justify-content:center;font-size:34px}.pcb{padding:10px;display:flex;flex-direction:column;gap:7px;font-size:12px}.pl{display:flex;gap:5px;flex-wrap:wrap}.plb{font-size:11px;padding:2px 8px;border-radius:99px;background:rgba(212,255,63,.18);color:#f9a8d4}.plb.tt{background:rgba(34,211,238,.15);color:#67e8f9}.pmf textarea,.pmf select{width:100%;background:rgba(255,255,255,.05);color:inherit;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:8px;font:inherit;box-sizing:border-box}
+
+.ptabs{display:flex;gap:6px;margin-bottom:16px}.ptab{padding:9px 18px;border-radius:12px;background:var(--p);border:1px solid var(--b);font-weight:600;color:var(--m);transition:.2s}.ptab:hover{color:var(--t)}
+.ptab.on{color:#fff;border-color:transparent}.ptab.all.on{background:var(--p2);border-color:var(--b)}.ptab.ig.on{background:linear-gradient(45deg,#f9ce34,#ee2a7b 50%,#6228d7);box-shadow:0 6px 22px rgba(238,42,123,.35)}.ptab.tt.on{background:#000;border-color:#25f4ee;box-shadow:-3px 0 0 #25f4ee,3px 0 0 #fe2c55,0 6px 22px rgba(254,44,85,.25)}
+.accs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px;align-items:center}.acc{display:flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;border-radius:40px;background:var(--p);border:1px solid var(--b);transition:.2s;position:relative}.acc:hover{border-color:rgba(255,255,255,.25);transform:translateY(-1px)}.acc.on{background:var(--p2);border-color:var(--a);box-shadow:0 0 0 3px rgba(212,255,63,.18)}
+.acc b{font-size:13px;display:block;text-align:left}.acc small{color:var(--m);font-size:11px;display:block;text-align:left}.acc .ed{opacity:0;margin-left:4px;font-size:12px;padding:3px 6px;border-radius:8px;background:var(--p2)}.acc:hover .ed{opacity:1}
+.av{border-radius:50%;padding:2px;flex:none;display:grid}.av.ig{background:linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7)}.av.tt{background:conic-gradient(#25f4ee,#fe2c55,#25f4ee)}.av>span{border-radius:50%;background:#0b0c12 center/cover;display:grid;place-items:center;font-weight:800;border:2px solid #0b0c12;color:#fff}
+.addacc{padding:10px 16px;border-radius:40px;border:1px dashed rgba(255,255,255,.22);color:var(--m);font-weight:600;transition:.2s}.addacc:hover{color:var(--t);border-color:var(--a);background:rgba(212,255,63,.08)}
+.prof{display:flex;align-items:center;gap:22px;padding:22px;border-radius:20px;background:var(--p);border:1px solid var(--b);margin-bottom:18px;animation:fu .35s ease}.prof h2{font-size:21px;display:flex;align-items:center;gap:10px}.pfb{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;color:#fff}.pfb.ig{background:linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7)}.pfb.tt{background:#000;border:1px solid #25f4ee;box-shadow:2px 0 0 #fe2c55}
+.cnt{display:flex;gap:26px;margin-top:10px}.cnt div b{font-size:19px;display:block}.cnt div span{color:var(--m);font-size:12px}
+.tool{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}.fch{display:flex;gap:6px;flex-wrap:wrap}.fc{padding:6px 13px;border-radius:20px;background:var(--p);border:1px solid var(--b);font-size:12.5px;font-weight:600;color:var(--m);transition:.15s}.fc.on{color:var(--t);background:var(--p2);border-color:var(--a)}.fc i{font-style:normal;opacity:.6;margin-left:4px}
+.vtg{display:flex;background:var(--p);border:1px solid var(--b);padding:3px;border-radius:10px}.vtg button{padding:6px 14px;border-radius:8px;color:var(--m);font-weight:600;font-size:12.5px}.vtg button.on{background:var(--p2);color:var(--t)}
+.pg{display:grid;gap:3px;border-radius:14px;overflow:hidden;animation:fu .35s ease}.pg.ig{grid-template-columns:repeat(3,1fr);max-width:820px}.pg.tt{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:4px}
+.gi{position:relative;background:#14151d center/cover;cursor:pointer;overflow:hidden;animation:fu .4s ease both}.pg.ig .gi{aspect-ratio:4/5}.pg.tt .gi{aspect-ratio:9/16;border-radius:6px}.gi:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.75));transition:.2s}.gi:hover:after{background:linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.8))}.gi .ph{position:absolute;inset:0;display:grid;place-items:center;font-size:40px;opacity:.4}
+.gi .s{position:absolute;top:8px;left:8px;z-index:1;font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:20px;backdrop-filter:blur(8px)}.s.sa{background:rgba(251,191,36,.85);color:#1a1200}.s.sp{background:rgba(59,130,246,.85)}.s.so{background:rgba(34,197,94,.85);color:#03200d}.s.sr{background:rgba(239,68,68,.85)}
+.gi .t{position:absolute;left:10px;right:10px;bottom:9px;z-index:1;font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gi .rl{position:absolute;top:8px;right:9px;z-index:1;font-size:13px}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}@keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}.modal.on .mbox{animation:pop .22s ease}
+.phone{width:290px;flex:none;border-radius:38px;border:10px solid #1c1d26;background:#000;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.6),inset 0 0 0 1px #333;display:flex;flex-direction:column;height:600px;position:relative}
+.phone .notch{position:absolute;top:6px;left:50%;transform:translateX(-50%);width:90px;height:22px;border-radius:20px;background:#000;z-index:3}
+.ph-ig{display:flex;flex-direction:column;height:100%;background:#000;padding-top:32px;font-size:12.5px}.ph-ig .hd{display:flex;align-items:center;gap:8px;padding:8px 10px;font-weight:700}.ph-ig .md{aspect-ratio:4/5;background:#111;display:grid;place-items:center;overflow:hidden}.ph-ig .md video,.ph-ig .md img{width:100%;height:100%;object-fit:cover}.ph-ig .ic{padding:8px 10px;font-size:18px;letter-spacing:8px}.ph-ig .cp{padding:0 10px;overflow:auto;line-height:1.4}.ph-ig .cp .hs{color:#e0f1ff}
+.ph-tt{position:relative;height:100%;background:#111}.ph-tt video,.ph-tt img{width:100%;height:100%;object-fit:cover}.ph-tt .ov{position:absolute;left:12px;right:56px;bottom:18px;font-size:12.5px;line-height:1.4;text-shadow:0 1px 3px #000}.ph-tt .ov b{font-size:14px}.ph-tt .side{position:absolute;right:8px;bottom:70px;display:flex;flex-direction:column;gap:16px;font-size:22px;align-items:center}.ph-tt .side small{font-size:10px;display:block;text-align:center}
+.pmf{width:340px;display:flex;flex-direction:column;gap:11px;overflow:auto;max-height:600px;padding-right:4px}.pmf label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--m);font-weight:600}.pmf select,.pmf input,.pmf textarea,.f select{background:var(--p);border:1px solid var(--b);border-radius:10px;color:var(--t);padding:9px 11px;font:inherit;outline:0}.pmf select option,.f select option{background:#0f1018}
+.pacc{display:flex;gap:6px;flex-wrap:wrap}.pacc button{display:flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border-radius:20px;border:1px solid var(--b);font-size:12px;font-weight:600;opacity:.55}.pacc button.on{opacity:1;border-color:var(--a);background:var(--p2)}
+.sw{display:flex;gap:8px}.sw button{width:28px;height:28px;border-radius:50%;border:2px solid transparent}.sw button.on{border-color:#fff;box-shadow:0 0 0 2px var(--a)}
+.plsel{display:grid;grid-template-columns:1fr 1fr;gap:8px}.plsel button{padding:12px;border-radius:12px;border:1px solid var(--b);background:var(--p);font-weight:700}.plsel button.on.ig{background:linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7);border-color:transparent}.plsel button.on.tt{background:#000;border-color:#25f4ee;box-shadow:3px 0 0 #fe2c55}
+.kp{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin:16px 0}.kc{background:var(--p);border:1px solid var(--b);border-radius:14px;padding:14px 16px}.kc span{color:var(--m);font-size:12px;font-weight:600}.kc b{display:block;font-size:24px;margin:6px 0 2px;letter-spacing:-.5px}.kc small{font-size:12px;color:var(--m)}.up{color:#22c55e!important}.dn{color:#ef4444!important}
+.sc{background:var(--p);border:1px solid var(--b);border-radius:16px;padding:18px;margin-bottom:16px}.sc h3{font-size:15px;margin-bottom:12px}.s2{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}@media(max-width:1000px){.s2{grid-template-columns:1fr}}
+.tv{display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid var(--b)}.tv:first-of-type{border:0}.tv .r{width:26px;height:26px;border-radius:8px;background:var(--g);display:grid;place-items:center;font-weight:700;font-size:12px;flex:none}.tv .x{flex:1;min-width:0}.tv .x a{font-weight:600}.tv .x div{color:var(--m);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tv b{font-size:15px}
+.ins li{list-style:none;padding:9px 0;border-top:1px solid var(--b);line-height:1.5}.ins li:first-child{border:0}.ins{padding:0}.ins b{color:#d4ff3f}
+.vs table{width:100%;border-collapse:collapse;font-size:13px}.vs td,.vs th{padding:7px 8px;border-top:1px solid var(--b);text-align:left}.vs th{color:var(--m);font-weight:600;font-size:12px}.vs select{background:#11121a;color:var(--t);border:1px solid var(--b);border-radius:8px;padding:4px 6px;font:inherit;font-size:12px}
+.cmp td:nth-child(n+2){text-align:right}.bar svg rect.b{transition:.15s}.bar svg rect.b:hover{opacity:.75}
+/* ===== De postat ===== */
+.dp-k{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:22px}
+.dp-k div{background:var(--p);border:1px solid var(--b);border-radius:16px;padding:14px 16px;position:relative;overflow:hidden}
+.dp-k b{display:block;font-size:26px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}.dp-k span{color:var(--m);font-size:12px;font-weight:600}
+.dp-k div:last-child b{background:var(--g);-webkit-background-clip:text;background-clip:text;color:transparent}
+.dp-list{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.dp-p{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;padding:14px;border-radius:18px;background:var(--p);border:1px solid var(--b);transition:transform .2s,border-color .2s;animation:fu .35s ease both}
+.dp-p:hover{transform:translateY(-2px);border-color:rgba(212,255,63,.5)}
+.dp-ring{--v:0;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#d4ff3f calc(var(--v)*1%),#d4ff3f calc(var(--v)*1%),rgba(255,255,255,.08) 0);position:relative;flex:none}
+.dp-ring:before{content:"";position:absolute;inset:5px;border-radius:50%;background:#0d0e15 center/cover;background-image:var(--im,none)}
+.dp-ring b{position:relative;font-size:13px;font-weight:800;text-shadow:0 1px 4px #000}
+.dp-p h3{font-size:15px;margin-bottom:6px;line-height:1.25}
+.dp-tags{display:flex;gap:6px;flex-wrap:wrap}.dp-t{font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--p2);color:#cfd2e3;white-space:nowrap}
+.dp-t.ok{background:rgba(34,197,94,.16);color:#86efac}.dp-t.wa{background:rgba(251,191,36,.14);color:#fcd34d}
+.dp-src{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 20px}.dp-src a{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:30px;background:var(--p);border:1px solid var(--b);font-size:12.5px;font-weight:600}.dp-src a:hover{border-color:var(--a)}
+.dp-src em{font-style:normal;font-size:10.5px;font-weight:700;padding:2px 6px;border-radius:6px;background:rgba(212,255,63,.2);color:#d4ff3f}
+.dp-f{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}.dp-f button{padding:8px 14px;border-radius:30px;background:var(--p);border:1px solid var(--b);font-weight:600;color:var(--m);font-size:13px}.dp-f button.on{background:var(--p2);color:var(--t);border-color:rgba(212,255,63,.6)}
+.dp-g{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.dp-c{border-radius:18px;background:var(--p);border:1px solid var(--b);overflow:hidden;display:flex;flex-direction:column;animation:fu .35s ease both}
+.dp-c.done{border-color:rgba(34,197,94,.45)}
+.dp-v{position:relative;aspect-ratio:9/16;background:#000;max-height:62vh}.dp-v video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
+.dp-v .nov{position:absolute;inset:0;display:grid;place-items:center;color:var(--m);font-size:13px;text-align:center;padding:20px}
+.dp-v .st{position:absolute;top:10px;left:10px;font-size:11px;font-weight:700;padding:4px 9px;border-radius:20px;backdrop-filter:blur(8px);background:rgba(0,0,0,.55);pointer-events:none}
+.dp-v .st.ok{background:rgba(34,197,94,.9);color:#04150a}
+.dp-cb{padding:12px;display:grid;gap:10px}
+.dp-cb h4{font-size:13.5px;line-height:1.3}.dp-cb small{color:var(--m);font-size:11.5px}
+.dp-row{display:flex;gap:8px}
+.dp-dl{flex:1;justify-content:center;min-height:44px}
+.dp-tg{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;border-radius:12px;border:1px solid var(--b);background:var(--p2);font-weight:700;font-size:13px;transition:.2s}
+.dp-tg i{width:20px;height:20px;border-radius:6px;border:2px solid var(--m);display:grid;place-items:center;font-style:normal;font-size:12px;transition:.2s}
+.dp-tg.on{background:rgba(34,197,94,.16);border-color:rgba(34,197,94,.6);color:#bbf7d0}.dp-tg.on i{background:#22c55e;border-color:#22c55e;color:#04150a}
+.dp-acc{display:flex;gap:6px;flex-wrap:wrap}.dp-acc button{display:flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border-radius:20px;border:1px solid var(--b);font-size:12px;font-weight:600;opacity:.5;min-height:34px;transition:.15s}.dp-acc button.on{opacity:1;border-color:var(--a);background:rgba(212,255,63,.14)}
+.dp-date{display:flex;align-items:center;gap:8px;color:var(--m);font-size:12px;font-weight:600}.dp-date input{flex:1;background:var(--p);border:1px solid var(--b);border-radius:10px;color:var(--t);padding:8px 10px;font:inherit;color-scheme:dark;min-height:40px}
+.dp-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+/* ===== Telefon ===== */
+@media(max-width:760px){
+ body{flex-direction:column;overflow:auto;height:auto;min-height:100%}
+ aside{position:fixed;left:0;right:0;bottom:0;width:auto;height:auto;padding:6px 6px calc(6px + env(safe-area-inset-bottom));flex-direction:row;border-right:0;border-top:1px solid var(--b);background:rgba(10,11,18,.92);z-index:5}
+ aside .logo{display:none}
+ #nav{display:flex;gap:2px;overflow-x:auto;width:100%;scrollbar-width:none}#nav::-webkit-scrollbar{display:none}
+ .nav{flex:none;flex-direction:column;gap:2px;padding:6px 10px;font-size:11px;min-width:64px;text-align:center}.nav .c{display:none}.nav.on{box-shadow:inset 0 2px 0 var(--a)}
+  .nav{flex:1 0 0;min-width:52px;padding:6px 2px;gap:1px}.nav .ni{font-size:18px}.nav .nt{font-size:10px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ main{min-height:100vh}
+ header{position:sticky;top:0;z-index:4;padding:10px 12px;gap:8px;background:rgba(7,8,13,.9);backdrop-filter:blur(14px)}
+ header .btn.pri{padding:8px 10px}
+ #view{overflow:visible;padding:16px 14px 110px}
+ h1{font-size:22px}.sub{margin-bottom:16px}
+ .hero{grid-template-columns:1fr;gap:16px}.tabs{width:100%;overflow-x:auto}.stats{flex-wrap:wrap}
+ .ad{grid-template-columns:1fr}.acts{flex-direction:row;align-items:center;flex-wrap:wrap}
+ table{display:block;overflow-x:auto}
+ .mbox{max-width:100vw;max-height:100dvh;width:100vw;height:100dvh;border-radius:0;flex-direction:column;overflow:auto}.mbox video{max-width:100%;max-height:60vh}
+ .f,.pmf{width:100%;max-height:none}.phone{width:100%;max-width:300px;margin:0 auto}
+ .kb{grid-template-columns:1fr}
+ .dp-k{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.dp-k b{font-size:22px}
+ .dp-list{grid-template-columns:1fr}
+ .dp-g{grid-template-columns:1fr;gap:18px}.dp-v{max-height:72vh;aspect-ratio:9/16;margin:0 auto;width:100%}
+}
+@media(prefers-reduced-motion:reduce){.dp-p,.dp-c{animation:none}}
+/* ===== Design v2: camera de control (negru cald, un singur accent lime) ===== */
+body{font-family:"Geist",ui-sans-serif,system-ui,"Segoe UI",sans-serif;font-size:14px;letter-spacing:-.005em;-webkit-font-smoothing:antialiased}
+body:before{background:linear-gradient(rgba(238,236,228,.025) 1px,transparent 1px) 0 0/100% 32px,linear-gradient(90deg,rgba(238,236,228,.025) 1px,transparent 1px) 0 0/32px 100%;-webkit-mask:radial-gradient(120% 80% at 70% 0%,#000,transparent 75%);mask:radial-gradient(120% 80% at 70% 0%,#000,transparent 75%)}
+h1{font-size:30px;font-weight:700;letter-spacing:-.035em}
+.sub{font-size:13.5px}
+b,.price,.st b,.dp-k b,.kc b,.cnt div b,.nav .c,.dp-t{font-variant-numeric:tabular-nums}
+.st b,.dp-k b,.kc b{font-family:"Geist Mono",ui-monospace,monospace;letter-spacing:-.04em}
+aside{background:#0e0e0c;border-right:1px solid var(--b);backdrop-filter:none}
+.logo{letter-spacing:-.03em;font-size:18px}
+.logo i{position:relative;overflow:hidden;width:32px;height:32px;border-radius:9px;background:#1a1a16;box-shadow:inset 0 0 0 1px rgba(212,255,63,.35);font-size:0}
+.logo i:before{content:"";position:absolute;inset:0;background:conic-gradient(from 0deg,rgba(212,255,63,.85),rgba(212,255,63,0) 70deg,transparent);animation:sweep 3.2s linear infinite}
+.logo i:after{content:"";position:absolute;inset:8px;border-radius:50%;border:1px solid rgba(212,255,63,.55);box-shadow:0 0 0 5px rgba(212,255,63,.08)}
+@keyframes sweep{to{transform:rotate(360deg)}}
+.nav{border-radius:8px;font-weight:500;padding:9px 12px}.nav:hover{background:#171714}
+.nav.on{background:#1b1b17;color:var(--t);box-shadow:inset 2px 0 0 var(--a)}
+.nav .c{background:transparent;border:1px solid var(--b);color:var(--m);font-family:"Geist Mono",monospace}
+.nav.on .c{border-color:rgba(212,255,63,.4);color:var(--a)}
+header{border-bottom:1px solid var(--b);background:rgba(11,11,10,.85);backdrop-filter:blur(12px)}
+.search{background:#121210;border-radius:10px}.search:focus-within{border-color:rgba(212,255,63,.5)}
+.btn{border-radius:9px;background:#191916;border-color:var(--b)}.btn:hover{background:#22221e;border-color:#3a3932}
+.btn.pri{background:var(--a);color:var(--ink);border:0;box-shadow:none;font-weight:700}.btn.pri:hover{background:#e2ff74}
+.card,.ad,.sc,.dp-p,.dp-c,.kc,.st,.dp-k div,table,.prof,.msg,.vc{background:var(--p);border-color:var(--b)}
+.card:hover,.dp-p:hover{border-color:#3b3a32;box-shadow:0 18px 40px -20px rgba(0,0,0,.8)}
+.pimg .ph{background:#1a1a16}
+.bd{background:#1d1c19;color:#c9c6ba;border:1px solid var(--b)}
+.cc{background:rgba(212,255,63,.1);color:var(--a)}
+.hook{border-left-color:var(--a);color:var(--t)}
+.tabs,.vtg{background:#121210}.tab.on,.vtg button.on{background:#22221e}
+.st b,.dp-k div:last-child b{background:none;-webkit-background-clip:initial;background-clip:initial;color:var(--a)}
+.empty{border-color:#2f2e28;background:repeating-linear-gradient(135deg,transparent 0 10px,rgba(238,236,228,.015) 10px 20px)}
+.mbox{background:#10100e;border-color:var(--b)}
+.modal{background:rgba(5,5,4,.8)}
+/* De postat */
+.dp-k div{padding:16px 18px}
+.dp-k div:before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:2px;background:var(--b)}
+.dp-k div:last-child:before{background:var(--a)}
+.dp-k span{text-transform:uppercase;letter-spacing:.12em;font-size:10.5px}
+.dp-ring{background:conic-gradient(var(--a) calc(var(--v)*1%),#26251f 0)}
+.dp-ring:before{background-color:#0e0e0c;inset:4px}
+.dp-ring.has-im b{display:none}
+.dp-p h3{font-size:15.5px;letter-spacing:-.02em}
+.dp-t{background:#1b1b17;border:1px solid var(--b);color:#bdbaae}
+.dp-t.ok{background:rgba(212,255,63,.08);border-color:rgba(212,255,63,.3);color:var(--a)}.dp-t.wa{background:transparent;color:#d9b45a;border-color:rgba(217,180,90,.3)}
+.dp-src a{background:#141412}.dp-src em{background:rgba(212,255,63,.12);color:var(--a)}
+.dp-f button{background:#141412}.dp-f button.on{background:var(--a);color:var(--ink);border-color:var(--a)}
+.dp-c.done{border-color:rgba(212,255,63,.35)}
+.dp-v{background:#050505}.dp-v .thumbbtn{position:absolute;inset:0;width:100%;height:100%;background:#050505 center/cover;display:grid;place-items:center;cursor:pointer}
+.dp-v .thumbbtn span{width:56px;height:56px;border-radius:50%;background:rgba(11,11,10,.65);backdrop-filter:blur(6px);border:1px solid rgba(238,236,228,.25);display:grid;place-items:center;font-size:18px;padding-left:3px}
+.dp-v .st{border:1px solid rgba(238,236,228,.15)}.dp-v .st.ok{background:var(--a);color:var(--ink);border-color:var(--a)}
+.dp-v .nr{position:absolute;top:10px;right:10px;font:600 11px/1 "Geist Mono",monospace;padding:4px 7px;border-radius:6px;background:rgba(11,11,10,.65);color:#d6d3c8;pointer-events:none}
+.dp-tg.on{background:var(--a);border-color:var(--a);color:var(--ink)}.dp-tg.on i{background:var(--ink);border-color:var(--ink);color:var(--a)}
+.dp-acc button.on{border-color:var(--a);background:rgba(212,255,63,.1)}
+.dp-cap{position:relative;background:#0f0f0d;border:1px dashed #34332c;border-radius:10px;padding:10px 12px 10px;font-size:12.5px;line-height:1.5;color:#d6d3c8;white-space:pre-wrap}
+.dp-cap small{display:block;color:var(--m);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
+.dp-cap button{position:absolute;top:7px;right:7px;font-size:11.5px;font-weight:700;padding:5px 9px;border-radius:7px;background:#1e1d1a;border:1px solid var(--b)}
+.dp-cap button.ok{background:var(--a);color:var(--ink);border-color:var(--a)}
+.dp-prog{height:4px;border-radius:4px;background:#22211c;overflow:hidden;margin:2px 0 18px}.dp-prog i{display:block;height:100%;background:var(--a);border-radius:4px;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+@media(max-width:760px){
+ aside{background:rgba(14,14,12,.94)}
+ .nav.on{box-shadow:inset 0 2px 0 var(--a);background:transparent;color:var(--a)}
+ h1{font-size:24px}
+}
+@media(max-width:760px){.dp-v{aspect-ratio:auto;height:56vh;max-height:none}.nav{min-width:0!important;flex:1 1 0!important}.nav .nt{font-size:0;overflow:visible;max-width:none;text-overflow:clip;line-height:1}.nav .nt:after{content:attr(data-s);font-size:10.5px;letter-spacing:-.01em;white-space:nowrap}}
+@media(prefers-reduced-motion:reduce){.logo i:before{animation:none}}
+/* ===== v3: carduri de produs, conturi, competitori organici ===== */
+.p3-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.p3{display:flex;flex-direction:column;border-radius:16px;overflow:hidden;background:var(--p);border:1px solid var(--b);transition:transform .2s cubic-bezier(.2,.8,.2,1),border-color .2s;animation:fu .35s ease both}
+.p3:hover{transform:translateY(-3px);border-color:#3b3a32}
+.p3-img{position:relative;aspect-ratio:4/5;background:#151512 center/cover;display:grid;place-items:center;font-size:44px}
+.p3-img:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(11,11,10,.85))}
+.p3-n{position:absolute;z-index:1;left:12px;bottom:12px;font:600 11.5px/1 "Geist Mono",monospace;padding:6px 9px;border-radius:7px;background:var(--a);color:var(--ink)}
+.p3-b{padding:14px 14px 15px;display:grid;gap:8px}
+.p3-b h3{font-size:15.5px;letter-spacing:-.02em;line-height:1.25}
+.p3-acc{display:flex;gap:4px;align-items:center;min-height:26px}.p3-acc small{color:var(--m);font-size:12px}
+.p3-m{display:flex;justify-content:space-between;gap:8px;color:var(--m);font-size:12px}.p3-m b{color:var(--t)}
+.p3-lbl{margin:18px 0 8px;color:var(--m);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+.p3-accs{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.p3-accs .acc{display:flex;align-items:center;gap:9px;padding:5px 12px 5px 5px;border-radius:40px;background:var(--p);border:1px solid var(--b)}
+.p3-accs .acc:hover{border-color:#3b3a32}.p3-accs .acc b{display:block;font-size:13px}.p3-accs .acc small{display:block;color:var(--m);font-size:11px}
+.p3-accs .acc .ed{opacity:.5;font-size:12px;padding:3px 6px;border-radius:8px;background:var(--p2)}.p3-accs .acc .ed:hover{opacity:1}
+.org-top{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.org-top a{display:flex;gap:8px;align-items:center;max-width:280px;padding:6px 10px;border-radius:9px;background:#11110f;border:1px solid var(--b);font-size:12px;color:#cfccc0}
+.org-top a b{font-family:"Geist Mono",monospace;color:var(--a);font-size:11.5px}
+.ptab.on.all{background:var(--a);color:var(--ink);border-color:var(--a)}
+@media(max-width:760px){.p3-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.p3-b{padding:10px}.p3-b h3{font-size:13.5px}.p3-m{flex-direction:column;gap:2px;font-size:11px}.ptabs{overflow-x:auto}.ptab{flex:none}}
+</style></head><body>
+<aside><div class="logo"><i>📡</i>Radar</div><div id="nav"></div></aside>
+<main><header><div class="search">🔍<input id="q" placeholder="Caută produs, advertiser, hook, autor…"></div><div style="flex:1"></div><button class="btn pri" onclick="addProduct()">＋ Produs</button></header><div id="view"></div></main>
+<div class="modal" id="modal" onclick="if(event.target===this)closeM()"><div class="mbox" id="mbox"></div></div>
+<script src="data.js"></script>
+<script src="captions.js"></script>
+<script>
+const KEY='tracker-v3';
+let st={};try{st=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){st={}}
+if(typeof st!=='object'||Array.isArray(st))st={};
+st.produse=Array.isArray(st.produse)?st.produse:[];st.note=Array.isArray(st.note)?st.note:[];st.postari=(st.postari&&typeof st.postari==='object'&&!Array.isArray(st.postari))?st.postari:{};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
+const B=(window.BOT_DATA&&!Array.isArray(window.BOT_DATA))?window.BOT_DATA:{};
+const arr=k=>Array.isArray(B[k])?B[k]:[];
+function merge(a,b){const m=new Map();a.forEach(x=>x&&x.id&&m.set(x.id,x));b.forEach(x=>x&&x.id&&m.set(x.id,Object.assign({},m.get(x.id)||{},x)));return[...m.values()]}
+const D={get produse(){return merge(arr('produse'),st.produse)},reclame:arr('reclame'),competitori:arr('competitori'),video:arr('video'),get postari(){return arr('postari').filter(x=>x&&x.id).map(x=>Object.assign({},x,st.postari[x.id]||{}))}};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const flag=c=>c?`<span class="cc">${esc(c.toUpperCase())}</span>`:'';
+const money=(p,m)=>p==null||p===''?'—':(+p).toLocaleString('ro-RO',{maximumFractionDigits:2})+' '+(m||'');
+const days=d=>{if(!d)return null;const n=Math.floor((Date.now()-new Date(d))/864e5);return n<0?0:n};
+const fmtK=n=>n>=1000?(n/1000).toFixed(n>=1e5?0:1).replace('.0','')+'K':(n||0);
+const prod=id=>ALLP().find(p=>p.id===id);
+const img=p=>p&&p.imagine?`style="background-image:url('${esc(p.imagine)}')"`:'';
+const chip=id=>{const p=prod(id);if(!p)return'<span class="bd">Fără produs</span>';return `<a class="chip" href="#/produs/${esc(p.id)}">${p.imagine?`<img src="${esc(p.imagine)}" alt="">`:'<span class="mini"></span>'}${esc(p.nume)}</a>`};
+const empty=(i,t)=>`<div class="empty"><div>${i}</div>${t}</div>`;
+let Q='';
+const match=o=>!Q||JSON.stringify(o).toLowerCase().includes(Q)||((p=>p&&p.nume.toLowerCase().includes(Q))(prod(o.produsId)));
+const navs=[['produse','📦','Produse',()=>ALLP().length],['competitori','🥊','Competitori',()=>compN('')],['postari','📤','Postări',()=>D.postari.length],['statistici','📊','Statistici',()=>Object.keys(((window.BOT_DATA||{}).statistici||{}).conturi||{}).length]];
+function nav(cur){document.getElementById('nav').innerHTML=navs.map(([k,i,t,c])=>`<a class="nav ${cur===k?'on':''}" href="#/${k}"><i class="ni">${i}</i><span class="nt" data-s="${({reclame:'Ads',competitori:'Rivali',video:'Video',postari:'Plan',depostat:'Postez',statistici:'Stats'})[k]||t}">${t}</span><span class="c">${c()}</span></a>`).join('');const on=document.querySelector('#nav .on');on&&on.scrollIntoView&&on.scrollIntoView({block:'nearest',inline:'center'})}
+
+function productCard(p){const c=k=>D[k].filter(x=>x.produsId===p.id).length;
+ return `<a class="card" href="#/produs/${esc(p.id)}"><div class="pimg" ${img(p)}>${p.imagine?'':'<div class="ph">👕</div>'}</div><div class="pc"><div class="bd" style="display:inline-block;margin-bottom:8px">${esc(p.brand||'')}</div><h3>${esc(p.nume)}</h3><div class="price">${money(p.pret,p.moneda)}${p.pretVechi?`<s>${money(p.pretVechi,p.moneda)}</s>`:''}</div><div class="badges"><span class="bd">📣 ${c('reclame')} reclame</span><span class="bd">🥊 ${c('competitori')} competitori</span><span class="bd">🎬 ${c('video')} video</span></div></div></a>`}
+function adRow(r,showProd=true){const d=days(r.dataStart);
+ return `<div class="ad"><div><div class="adh">${showProd?chip(r.produsId):''}<span class="adv">${esc(r.advertiser)}</span><span class="flags" title="${esc((r.tari||[]).join(', '))}">${(r.tari||[]).map(flag).join('')}</span>${r.format?`<span class="bd">${esc(r.format)}</span>`:''}</div>
+ ${r.hook?`<div class="hook">„${esc(r.hook)}”</div>`:''}<div class="meta"><span>⏱ <b class="${d>30?'hot':''}">${d??'—'} zile</b> activă</span><span>🧩 <b>${r.variante||1}</b> variante</span><span>💰 <b>${money(r.pret,r.moneda)}</b></span>${r.dataStart?`<span>din ${esc(r.dataStart)}</span>`:''}</div>${r.note?`<div class="meta" style="margin-top:8px">${esc(r.note)}</div>`:''}</div>
+ <div class="acts">${r.linkAd?`<a class="btn pri" target="_blank" href="${esc(r.linkAd)}">Vezi reclama ↗</a>`:''}${r.linkMagazin?`<a class="btn" target="_blank" href="${esc(r.linkMagazin)}">Magazin ↗</a>`:''}</div></div>`}
+function compTable(list,showProd=true){if(!list.length)return empty('🥊','Niciun competitor');
+ return `<table><tr>${showProd?'<th>Produs</th>':''}<th>Competitor</th><th>Țări</th><th>Preț</th><th>Reclame</th><th></th></tr>${list.map(c=>{const ads=D.reclame.filter(r=>r.id==='r-'+c.id.slice(2)).length;return `<tr>${showProd?`<td>${chip(c.produsId)}</td>`:''}<td><b>${esc(c.nume)}</b><div class="n">${esc(c.note)}</div></td><td><span class="flags">${(c.tari||[]).map(flag).join('')}</span></td><td><b>${money(c.pret,c.moneda)}</b></td><td>${ads?'<span class="bd" style="color:#86efac">● activă</span>':'<span class="bd">—</span>'}</td><td><a class="btn" target="_blank" href="${esc(c.link)}">Deschide ↗</a></td></tr>`}).join('')}</table>`}
+function videoGrid(list){if(!list.length)return empty('🎬','Niciun video');
+ return `<div class="vg">${list.map(v=>`<div class="vc" onclick="playV('${esc(v.id)}')"><div class="vt">${v.thumb?`<img loading="lazy" decoding="async" src="${esc(v.thumb)}" alt="">`:''}<span class="lk">♥ ${fmtK(v.likeuri)}</span></div><div class="vi"><b>${esc(v.autor)}</b><span>${esc(v.descriere)}</span></div></div>`).join('')}</div>`}
+function notesBox(pid){const ns=st.note.filter(n=>pid?n.produsId===pid:true);
+ return `<div class="notes">${ns.length?ns.map(n=>`<div class="msg"><small>${new Date(n.t).toLocaleString('ro-RO')}${!pid&&n.produsId?' · '+esc((prod(n.produsId)||{}).nume||''):''}</small>${esc(n.text)}</div>`).join(''):empty('📝','Nicio notă încă')}
+ <div class="nin"><textarea id="nt" rows="2" placeholder="Scrie o notă… (Enter = salvează)"></textarea><button class="btn pri" onclick="addNote('${esc(pid||'')}')">Salvează</button></div></div>`}
+window.addNote=pid=>{const t=document.getElementById('nt');const v=t.value.trim();if(!v)return;st.note.push({id:'n'+Date.now(),produsId:pid||null,text:v,t:Date.now()});save();render()};
+window.playV=id=>{const v=D.video.find(x=>x.id===id);if(!v)return;document.getElementById('mbox').innerHTML=`<video src="${esc(v.fisier)}" controls autoplay playsinline></video><div style="width:260px"><h3>${esc(v.autor)}</h3><p class="sub">${esc(v.descriere)}</p><div class="meta" style="flex-direction:column;gap:6px"><span>♥ <b>${fmtK(v.likeuri)}</b> like-uri</span><span>📅 ${esc(v.data||'')}</span><span>${esc(v.platforma||'')}</span></div><div style="margin:14px 0">${chip(v.produsId)}</div><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn pri" target="_blank" href="${esc(v.url)}">TikTok ↗</a><a class="btn" download href="${esc(v.fisier)}">⬇ Salvează</a><button class="btn" onclick="closeM()">Închide</button></div></div>`;document.getElementById('modal').classList.add('on')};
+window.closeM=()=>{const m=document.getElementById('modal');const vd=m.querySelector('video');if(vd){vd.pause();vd.removeAttribute('src');vd.load()}m.classList.remove('on');document.getElementById('mbox').innerHTML=''};
+window.addProduct=()=>{document.getElementById('mbox').innerHTML=`<div class="f"><h3>Produs nou</h3><input id="fn" placeholder="Nume"><input id="fb" placeholder="Brand"><input id="fu" placeholder="Link"><input id="fp" placeholder="Preț (RON)"><input id="fi" placeholder="Link imagine (opțional)"><textarea id="fd" placeholder="Descriere"></textarea><div style="display:flex;gap:8px"><button class="btn pri" onclick="saveP()">Adaugă</button><button class="btn" onclick="closeM()">Anulează</button></div></div>`;document.getElementById('modal').classList.add('on')};
+window.saveP=()=>{const g=i=>document.getElementById(i).value.trim();if(!g('fn'))return;st.produse.push({id:'u'+Date.now(),nume:g('fn'),brand:g('fb'),url:g('fu'),pret:g('fp')?+g('fp').replace(',','.'):null,moneda:'RON',imagine:g('fi'),descriere:g('fd')});save();closeM();render()};
+const PST=['De aprobat','Programat','Postat','Respins'];
+const plb=pl=>`<div class="pl">${(pl||[]).map(x=>`<span class="plb ${/tik/i.test(x)?'tt':''}">${esc(x)}</span>`).join('')}</div>`;
+function postCard(x){return `<div class="pcard" onclick="openPost('${esc(x.id)}')"><div class="pth" ${x.thumb?`style="background-image:url('${esc(x.thumb)}')"`:''}>${x.thumb?'':'🎞️'}</div><div class="pcb"><b>${esc(x.titlu||'Fără titlu')}</b>${plb(x.platforme)}<div onclick="event.stopPropagation()">${chip(x.produsId)}</div>${x.dataProgramata?`<span>📅 ${esc(x.dataProgramata)}</span>`:''}</div></div>`}
+window.openPost=id=>{const x=D.postari.find(p=>p.id===id);if(!x)return;const L=x.linkPostare||{};
+document.getElementById('mbox').innerHTML=`${x.fisier?`<video src="${esc(x.fisier)}" controls playsinline preload="metadata"></video>`:'<div class="pth" style="width:260px">🎞️</div>'}<div class="pmf" style="width:300px;display:flex;flex-direction:column;gap:10px"><h3 style="margin:0">${esc(x.titlu||'')}</h3>${plb(x.platforme)}<div>${chip(x.produsId)}</div><label>Status<select id="ps">${PST.map(s=>`<option ${s===x.status?'selected':''}>${s}</option>`).join('')}</select></label><label>Descriere<textarea id="pd" rows="5">${esc(x.descriere||'')}</textarea></label><label>Hashtag-uri<textarea id="ph" rows="2">${esc(x.hashtaguri||'')}</textarea></label>${x.dataProgramata?`<span>📅 ${esc(x.dataProgramata)}</span>`:''}<div style="display:flex;gap:8px;flex-wrap:wrap">${L.instagram?`<a class="btn" target="_blank" href="${esc(L.instagram)}">Instagram ↗</a>`:''}${L.tiktok?`<a class="btn" target="_blank" href="${esc(L.tiktok)}">TikTok ↗</a>`:''}</div><div style="display:flex;gap:8px"><button class="btn pri" onclick="savePost('${esc(x.id)}')">Salvează</button><button class="btn" onclick="closeM()">Închide</button></div></div>`;document.getElementById('modal').classList.add('on')};
+window.savePost=id=>{st.postari[id]=Object.assign({},st.postari[id]||{},{status:document.getElementById('ps').value,descriere:document.getElementById('pd').value,hashtaguri:document.getElementById('ph').value});save();closeM();render()};
+
+const PCOL=['#8b5cf6','#ec4899','#f59e0b','#22c55e','#06b6d4','#ef4444'];
+st.conturi=Array.isArray(st.conturi)?st.conturi:[];
+const ACC=()=>merge(arr('conturi'),st.conturi).filter(a=>a&&a.id&&!a.sters);
+const isUA=id=>!arr('conturi').some(a=>a.id===id);
+const pk=a=>/tik/i.test(a&&a.platforma||'')?'tt':'ig';
+const ini=s=>(String(s||'?').replace(/[^\p{L}\p{N} ]/gu,'').trim().split(/\s+/).map(w=>w[0]).join('').slice(0,2)||'?').toUpperCase();
+const avatar=(a,sz=40)=>`<span class="av ${pk(a)}"><span style="width:${sz}px;height:${sz}px;font-size:${Math.round(sz*.36)}px;${a.avatar?`background-image:url('${esc(a.avatar)}');`:`background-color:${esc(a.culoare||'#16171f')};`}">${a.avatar?'':esc(ini(a.nume||a.handle))}</span></span>`;
+const postAcc=x=>{const A=ACC();if(Array.isArray(x.conturi)&&x.conturi.length)return x.conturi.filter(id=>A.some(a=>a.id===id));const pl=(x.platforme||[]).map(p=>/tik/i.test(p)?'tt':'ig');return A.filter(a=>!isUA(a.id)||false).filter(a=>pl.includes(pk(a))).map(a=>a.id)};
+const stOf=x=>PST.includes(x.status)?x.status:'De aprobat';
+const SCL={'De aprobat':'sa','Programat':'sp','Postat':'so','Respins':'sr'};
+let PS={plat:'all',acc:null,f:'Toate',view:'grid'};
+function renderPost(v){const A=ACC();const vis=A.filter(a=>PS.plat==='all'||pk(a)===PS.plat);if(!vis.some(a=>a.id===PS.acc))PS.acc=vis[0]?vis[0].id:null;const a=A.find(x=>x.id===PS.acc);
+ const all=D.postari.filter(match);const mine=a?all.filter(x=>postAcc(x).includes(a.id)):[];const cnt=s=>mine.filter(x=>stOf(x)===s).length;
+ const list=mine.filter(x=>PS.f==='Toate'||stOf(x)===PS.f);
+ let body;
+ if(!a)body=empty('👤',`Niciun cont ${PS.plat==='ig'?'Instagram':PS.plat==='tt'?'TikTok':''} încă.<br><br><button class="btn pri" onclick="accModal()">＋ Adaugă cont</button>`);
+ else{const k=pk(a);
+  const grid=list.length?`<div class="pg ${k}">${list.map((x,i)=>`<div class="gi" style="animation-delay:${Math.min(i,12)*30}ms;${x.thumb?`background-image:url('${esc(x.thumb)}')`:''}" onclick="openPost('${esc(x.id)}','${esc(a.id)}')">${x.thumb?'':'<div class="ph">🎞️</div>'}<span class="s ${SCL[stOf(x)]}">${stOf(x)}</span>${x.fisier?'<span class="rl">▶</span>':''}<div class="t">${esc(x.titlu||'Fără titlu')}${x.dataProgramata&&stOf(x)==='Programat'?` · 📅 ${esc(String(x.dataProgramata).replace("T"," "))}`:''}</div></div>`).join('')}</div>`:empty(k==='tt'?'🎵':'📷',mine.length?'Nicio postare cu statusul ăsta.':`Nicio postare pentru @${esc(a.handle)} încă.<br>Trimite-mi un video editat în chat și îl pregătesc aici.`);
+  const kb=`<div class="kb">${PST.map(s=>{const c=mine.filter(x=>stOf(x)===s);return `<div class="kcol"><h4>${s}<span>${c.length}</span></h4>${c.map(x=>postCard(x).replace(`openPost('${esc(x.id)}')`,`openPost('${esc(x.id)}','${esc(a.id)}')`)).join('')||'<div style="color:var(--m);font-size:12px;text-align:center;padding:20px 0">—</div>'}</div>`}).join('')}</div>`;
+  body=`<div class="prof">${avatar(a,78)}<div style="flex:1"><h2>@${esc(a.handle)} <span class="pfb ${k}">${k==='tt'?'TikTok':'Instagram'}</span></h2><div style="color:var(--m);margin-top:2px">${esc(a.nume||'')}</div><div class="cnt"><div><b>${mine.length}</b><span>Postări</span></div><div><b>${cnt('De aprobat')}</b><span>De aprobat</span></div><div><b>${cnt('Programat')}</b><span>Programat</span></div><div><b>${cnt('Postat')}</b><span>Postat</span></div></div></div>${isUA(a.id)?`<button class="btn" onclick="accModal('${esc(a.id)}')">✎ Editează</button>`:''}</div>
+  <div class="tool"><div class="fch">${['Toate',...PST].map(s=>`<button class="fc ${PS.f===s?'on':''}" onclick="PS.f='${s}';render()">${s}<i>${s==='Toate'?mine.length:cnt(s)}</i></button>`).join('')}</div><div class="vtg"><button class="${PS.view==='grid'?'on':''}" onclick="PS.view='grid';render()">▦ Grid</button><button class="${PS.view==='kb'?'on':''}" onclick="PS.view='kb';render()">☰ Kanban</button></div></div>${PS.view==='grid'?grid:kb}`}
+ v.innerHTML=`<h1>Postări</h1><p class="sub">Conturile tale de Instagram și TikTok · nimic nu pleacă fără „da”-ul tău</p>
+ <div class="ptabs">${[['all','Toate'],['ig','📷 Instagram'],['tt','🎵 TikTok']].map(([p,n])=>`<button class="ptab ${p} ${PS.plat===p?'on':''}" onclick="PS.plat='${p}';PS.acc=null;render()">${n}</button>`).join('')}</div>
+ <div class="accs">${vis.map(c=>`<button class="acc ${c.id===PS.acc?'on':''}" onclick="PS.acc='${esc(c.id)}';PS.f='Toate';render()">${avatar(c,34)}<span><b>@${esc(c.handle)}</b><small>${pk(c)==='tt'?'TikTok':'Instagram'} · ${all.filter(x=>postAcc(x).includes(c.id)).length} postări</small></span>${isUA(c.id)?`<span class="ed" onclick="event.stopPropagation();accModal('${esc(c.id)}')">✎</span>`:''}</button>`).join('')}<button class="addacc" onclick="accModal()">＋ Adaugă cont</button></div>${body}`}
+let AM={};
+window.accModal=(id,pid)=>{const a=id?ACC().find(x=>x.id===id):null;AM={produs:a?(a.produsId||''):(pid||''),id:id||null,pl:a?pk(a):(PS.plat==='tt'?'tt':'ig'),col:a&&a.culoare||PCOL[0]};drawAM(a||{})};
+function drawAM(a){document.getElementById('mbox').innerHTML=`<div class="f"><h3>${AM.id?'Editează contul':'Cont nou'}</h3><div class="plsel"><button class="ig ${AM.pl==='ig'?'on':''}" onclick="AM.pl='ig';amKeep()">📷 Instagram</button><button class="tt ${AM.pl==='tt'?'on':''}" onclick="AM.pl='tt';amKeep()">🎵 TikTok</button></div><label style="color:var(--m);font-size:12px;font-weight:600">Produsul contului<select id="ap" onchange="AM.produs=this.value"><option value="">— niciunul —</option>${ALLP().map(p=>`<option value="${esc(p.id)}" ${AM.produs===p.id?'selected':''}>${esc(p.nume)}</option>`).join('')}</select></label><label style="color:var(--m);font-size:12px;font-weight:600">Handle<input id="ah" placeholder="ex: nevyk.shop" value="${esc(a.handle||'')}"></label><label style="color:var(--m);font-size:12px;font-weight:600">Nume<input id="an" placeholder="ex: NEVYK Shop" value="${esc(a.nume||'')}"></label><label style="color:var(--m);font-size:12px;font-weight:600">Link poză profil (opțional)<input id="aa" placeholder="https://…" value="${esc(a.avatar||'')}"></label><div style="color:var(--m);font-size:12px;font-weight:600">Culoare</div><div class="sw">${PCOL.map(c=>`<button class="${AM.col===c?'on':''}" style="background:${c}" onclick="AM.col='${c}';amKeep()"></button>`).join('')}</div><div id="aerr" style="color:#f87171;font-size:12px"></div><div style="display:flex;gap:8px;margin-top:6px"><button class="btn pri" onclick="saveAcc()">${AM.id?'Salvează':'Adaugă cont'}</button><button class="btn" onclick="closeM()">Anulează</button>${AM.id?`<button class="btn" style="margin-left:auto;color:#f87171" onclick="delAcc()">Șterge</button>`:''}</div></div>`;document.getElementById('modal').classList.add('on');setTimeout(()=>{const e=document.getElementById('ah');e&&e.focus()},50)}
+window.amKeep=()=>{const g=i=>document.getElementById(i).value;drawAM({handle:g('ah'),nume:g('an'),avatar:g('aa')})};
+window.saveAcc=()=>{const g=i=>document.getElementById(i).value.trim();const hd=g('ah').replace(/^@/,'');if(!hd){document.getElementById('aerr').textContent='Scrie handle-ul contului.';return}
+ const o={platforma:AM.pl==='tt'?'TikTok':'Instagram',handle:hd,nume:g('an')||hd,avatar:g('aa'),culoare:AM.col,produsId:AM.produs||''};
+ if(AM.id){const i=st.conturi.findIndex(x=>x.id===AM.id);if(i>=0)Object.assign(st.conturi[i],o)}else{o.id='u-'+AM.pl+'-'+Date.now();st.conturi.push(o);PS.acc=o.id;PS.plat='all'}save();closeM();render()};
+window.delAcc=()=>{if(!confirm('Ștergi contul din Radar? (postările nu se șterg)'))return;st.conturi=st.conturi.filter(x=>x.id!==AM.id);if(PS.acc===AM.id)PS.acc=null;save();closeM();render()};
+let PM={};
+const tagsHtml=s=>esc(s||'').replace(/(#[\p{L}\p{N}_]+)/gu,'<span class="hs">$1</span>');
+function phoneHtml(x,a){const k=pk(a);const m=x.fisier?`<video src="${esc(x.fisier)}" ${x.thumb?`poster="${esc(x.thumb)}"`:''} controls playsinline loop preload="metadata"></video>`:x.thumb?`<img src="${esc(x.thumb)}">`:'<div style="display:grid;place-items:center;height:100%;font-size:50px;opacity:.4">🎞️</div>';
+ const d=document.getElementById('pd'),hh=document.getElementById('ph');const cap=d?d.value:(x.descriere||''),tg=hh?hh.value:(x.hashtaguri||'');
+ if(k==='tt')return `<div class="phone"><div class="notch"></div><div class="ph-tt">${m}<div class="side"><div>❤️<small>0</small></div><div>💬<small>0</small></div><div>↗<small>Share</small></div>${avatar(a,30)}</div><div class="ov" id="pcap"><b>@${esc(a.handle)}</b><br>${esc(cap)} ${tagsHtml(tg)}<br>🎵 sunet original – ${esc(a.nume||a.handle)}</div></div></div>`;
+ return `<div class="phone"><div class="notch"></div><div class="ph-ig"><div class="hd">${avatar(a,24)}<span>${esc(a.handle)}</span><span style="margin-left:auto">⋯</span></div><div class="md">${m}</div><div class="ic">♡ 💬 ➤</div><div class="cp" id="pcap"><b>${esc(a.handle)}</b> ${esc(cap)} ${tagsHtml(tg)}</div></div></div>`}
+window.openPost=(id,aid)=>{const x=D.postari.find(p=>p.id===id);if(!x)return;const ids=postAcc(x);const A=ACC();PM={id,acc:A.find(a=>a.id===aid)?aid:(ids[0]||(A[0]&&A[0].id)),sel:ids.slice()};const a=A.find(c=>c.id===PM.acc)||{handle:'cont',platforma:'Instagram'};const L=x.linkPostare||{};const lk=id=>L[id]||L[pk(A.find(c=>c.id===id))==='tt'?'tiktok':'instagram']||'';
+ closeM();document.getElementById('mbox').innerHTML=`<div id="phw">${phoneHtml(x,a)}</div><div class="pmf"><h3 style="margin:0">${esc(x.titlu||'Fără titlu')}</h3><div>${chip(x.produsId)}</div>
+ <label>Previzualizare pe<div class="pacc" id="pprev">${A.filter(c=>ids.includes(c.id)||c.id===PM.acc).map(c=>`<button class="${c.id===PM.acc?'on':''}" onclick="pmSwitch('${esc(c.id)}')">${avatar(c,20)}@${esc(c.handle)}</button>`).join('')}</div></label>
+ <label>Postează pe conturile<div class="pacc" id="psel">${A.map(c=>`<button data-id="${esc(c.id)}" class="${ids.includes(c.id)?'on':''}" onclick="this.classList.toggle('on')">${avatar(c,20)}@${esc(c.handle)}</button>`).join('')}</div></label>
+ <label>Status<select id="ps">${PST.map(s=>`<option ${s===stOf(x)?'selected':''}>${s}</option>`).join('')}</select></label>
+ <label>Data programată<input type="datetime-local" id="pdt" value="${esc(x.dataProgramata||'')}"></label>
+ <label>Descriere<textarea id="pd" rows="4" oninput="pmCap()">${esc(x.descriere||'')}</textarea></label>
+ <label>Hashtag-uri<textarea id="ph" rows="2" oninput="pmCap()">${esc(x.hashtaguri||'')}</textarea></label>
+ ${A.filter(c=>ids.includes(c.id)).map(c=>`<label>Link postare @${esc(c.handle)}<input data-lk="${esc(c.id)}" placeholder="—" value="${esc(lk(c.id))}"></label>`).join('')}
+ <div style="display:flex;gap:8px;margin-top:4px"><button class="btn pri" onclick="savePost('${esc(id)}')">Salvează</button><button class="btn" onclick="closeM()">Închide</button></div></div>`;document.getElementById('modal').classList.add('on')};
+window.pmSwitch=aid=>{const x=D.postari.find(p=>p.id===PM.id);const a=ACC().find(c=>c.id===aid);if(!x||!a)return;const w=document.getElementById('phw');const vd=w.querySelector('video');if(vd){vd.pause();vd.removeAttribute('src');vd.load()}PM.acc=aid;w.innerHTML=phoneHtml(x,a);document.querySelectorAll('#pprev button').forEach(b=>b.classList.toggle('on',b.getAttribute('onclick').includes(`'${aid}'`)))};
+window.pmCap=()=>{const x=D.postari.find(p=>p.id===PM.id),a=ACC().find(c=>c.id===PM.acc);const e=document.getElementById('pcap');if(!e||!a)return;const cap=document.getElementById('pd').value,tg=document.getElementById('ph').value;e.innerHTML=pk(a)==='tt'?`<b>@${esc(a.handle)}</b><br>${esc(cap)} ${tagsHtml(tg)}<br>🎵 sunet original – ${esc(a.nume||a.handle)}`:`<b>${esc(a.handle)}</b> ${esc(cap)} ${tagsHtml(tg)}`};
+window.savePost=id=>{const g=i=>document.getElementById(i).value;const sel=[...document.querySelectorAll('#psel button.on')].map(b=>b.dataset.id);const lp={};document.querySelectorAll('[data-lk]').forEach(i=>{if(i.value.trim())lp[i.dataset.lk]=i.value.trim()});const x=D.postari.find(p=>p.id===id)||{};
+ st.postari[id]=Object.assign({},st.postari[id]||{},{status:g('ps'),dataProgramata:g('pdt'),descriere:g('pd'),hashtaguri:g('ph'),conturi:sel,linkPostare:Object.assign({},x.linkPostare||{},lp)});save();closeM();render()};
+let tab='reclame';
+const TIPS=['Necategorizat','Ofertă/reducere','Teaser drop','Prezentare produs','Try-on / outfit','Trend / meme','Behind the scenes','UGC / review','Lifestyle'];
+st.tipuri=(st.tipuri&&typeof st.tipuri==='object')?st.tipuri:{};
+const SD=()=>(window.BOT_DATA&&window.BOT_DATA.statistici)||{conturi:{},istoric:[]};
+let SS={acc:null};
+const fmt=n=>n==null?'—':n>=1e6?(n/1e6).toFixed(1).replace('.0','')+'M':n>=1e4?(n/1e3).toFixed(1).replace('.0','')+'K':Number(n).toLocaleString('ro-RO');
+const tipOf=(aid,x)=>st.tipuri[aid+':'+x.id]||x.tip||'Necategorizat';
+window.setTip=(aid,id,t)=>{st.tipuri[aid+':'+id]=t;save();render()};
+const median=a=>{if(!a.length)return 0;const s=[...a].sort((x,y)=>x-y),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2};
+function sInsights(aid,vids){const vs=vids.map(x=>x.vizualizari||0),tot=vs.reduce((a,b)=>a+b,0);const top=[...vids].sort((a,b)=>b.vizualizari-a.vizualizari);const t5=top.slice(0,5).reduce((a,x)=>a+x.vizualizari,0);
+ const by={};vids.forEach(x=>{const t=tipOf(aid,x);(by[t]=by[t]||[]).push(x.vizualizari||0)});const types=Object.entries(by).map(([t,a])=>({t,n:a.length,avg:a.reduce((p,q)=>p+q,0)/a.length})).sort((a,b)=>b.avg-a.avg);
+ const cat=types.filter(t=>t.t!=='Necategorizat');return {tot,med:median(vs),avg:vids.length?tot/vids.length:0,t5p:tot?t5/tot*100:0,top,types,best:cat[0]||null,zero:vs.filter(v=>v===0).length,over10k:vs.filter(v=>v>=1e4).length,n:vids.length}}
+function sBar(aid,vids){const l=[...vids].sort((a,b)=>b.vizualizari-a.vizualizari).slice(0,30);if(!l.length)return '';const W=900,H=240,pl=46,pb=22,mx=Math.max(...l.map(x=>x.vizualizari),1),bw=(W-pl)/l.length;
+ const ticks=[0,.25,.5,.75,1].map(f=>{const y=H-pb-(H-pb-24)*f;return `<line x1="${pl}" x2="${W}" y1="${y}" y2="${y}" stroke="rgba(255,255,255,.07)"/><text x="${pl-6}" y="${y+4}" fill="#8b90a5" font-size="10" text-anchor="end">${fmt(Math.round(mx*f))}</text>`}).join('');
+ const bars=l.map((x,i)=>{const h=Math.max(2,(H-pb-24)*x.vizualizari/mx),X=pl+i*bw+2,y=H-pb-h;return `<a href="${esc(x.url)}" target="_blank"><rect class="b" x="${X}" y="${y}" width="${Math.max(2,bw-4)}" height="${h}" rx="3" fill="${i<5?'url(#sg)':'rgba(212,255,63,.35)'}"><title>#${i+1} · ${fmt(x.vizualizari)} vizualizări · ${esc(tipOf(aid,x))}${x.data?' · '+x.data:''}</title></rect></a>${i<5?`<text x="${X+(bw-4)/2}" y="${y-4}" fill="#eef0f7" font-size="10" text-anchor="middle">${fmt(x.vizualizari)}</text>`:''}<text x="${X+(bw-4)/2}" y="${H-6}" fill="#8b90a5" font-size="9" text-anchor="middle">${i+1}</text>`}).join('');
+ return `<div class="bar"><svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block"><defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4ff3f"/><stop offset="1" stop-color="#7f9a25"/></linearGradient></defs>${ticks}${bars}</svg></div>`}
+function sLine(aid){const h=(SD().istoric||[]).map(p=>({d:p.data,v:p.conturi&&p.conturi[aid]&&p.conturi[aid].urmaritori})).filter(p=>p.v!=null);if(!h.length)return '<p class="sub">Fără istoric încă.</p>';
+ const W=420,H=120,mn=Math.min(...h.map(p=>p.v)),mx=Math.max(...h.map(p=>p.v)),X=i=>h.length<2?W/2:20+i*(W-40)/(h.length-1),Y=v=>mx===mn?H/2:H-20-(H-40)*(v-mn)/(mx-mn);
+ return `<svg viewBox="0 0 ${W} ${H}" width="100%"><polyline fill="none" stroke="url(#sg)" stroke-width="2.5" points="${h.map((p,i)=>X(i)+','+Y(p.v)).join(' ')}"/>${h.map((p,i)=>`<circle cx="${X(i)}" cy="${Y(p.v)}" r="5" fill="#d4ff3f"><title>${p.d}: ${p.v}</title></circle><text x="${X(i)}" y="${Y(p.v)-10}" fill="#eef0f7" font-size="11" text-anchor="middle">${p.v}</text><text x="${X(i)}" y="${H-4}" fill="#8b90a5" font-size="10" text-anchor="middle">${p.d}</text>`).join('')}</svg><p class="sub" style="margin:4px 0 0">${h.length<2?'Un singur punct deocamdată — linia crește la fiecare actualizare.':''}</p>`}
+const kc=(l,v,s,cl)=>`<div class="kc"><span>${l}</span><b>${v}</b><small class="${cl||''}">${s||'&nbsp;'}</small></div>`;
+const dl=d=>d==null?'':`<span class="${d>=0?'up':'dn'}">${d>=0?'▲ +':'▼ '}${String(d).replace('.',',')}%</span> vs perioada anterioară`;
+function renderStats(v){const S=SD(),A=ACC().filter(a=>S.conturi[a.id]);if(!A.some(a=>a.id===SS.acc))SS.acc=(A.find(x=>pk(x)==='tt')||A[0]||{}).id||null;const a=A.find(x=>x.id===SS.acc);
+ if(!a){v.innerHTML=`<h1>Statistici</h1>${empty('📊','Nicio statistică încă')}`;return}
+ const C=S.conturi[a.id],k=pk(a),P=C.profil||{},vids=C.video||[],I=sInsights(a.id,vids),pe=C.perioade||{};
+ let kp=kc('Urmăritori',fmt(P.urmaritori),P.urmariri!=null?`urmărește ${P.urmariri}`:'');
+ if(k==='tt'&&!pe['28z']){kp+=kc('Videoclipuri',fmt(P.postari??vids.length))+kc('Vizualizări totale',fmt(I.tot),`${I.n} videoclipuri`)+kc('Like-uri total profil',fmt(P.likeuriTotal))+kc('Mediană / video',fmt(Math.round(I.med)))+kc('Cel mai bun video',fmt(I.top[0]&&I.top[0].vizualizari))}
+ else if(k==='tt'){kp+=['7z','28z','60z'].map(z=>kc(`Vizualizări ${z.replace('z',' zile')}`,fmt(pe[z]&&pe[z].vizualizari),pe[z]?dl(pe[z].deltaVizualizari)||`+${pe[z].urmaritoriNoi??'—'} urmăritori noi`:'')).join('')
+  +kc('Like-uri (28 zile)',fmt(pe['28z'].likeuri),`total profil: ${fmt(P.likeuriTotal)}`)+kc('Share-uri (28 zile)',fmt(pe['28z'].share),`60 zile: ${fmt(pe['60z'].share)}`)+kc('Vizite profil (28 zile)',fmt(pe['28z'].vizualizariProfil),`7 zile: ${fmt(pe['7z'].vizualizariProfil)} · 60 zile: ${fmt(pe['60z'].vizualizariProfil)}`)}
+ else{const q=C.insights30z||{};kp+=kc('Postări',fmt(P.postari))+kc('Vizualizări reels (total)',fmt(I.tot),`${I.n} reels`)+kc('Vizualizări 30 zile',fmt(q.vizualizari),`${q.spectatori??'—'} spectatori`)+kc('Interacțiuni 30 zile',fmt(q.interactiuni),`${q.conturiImplicate??'—'} conturi implicate`)+kc('Vizite profil 30 zile',fmt(q.vizitariProfil))}
+ const top5=I.top.slice(0,5).map((x,i)=>`<div class="tv"><span class="r">${i+1}</span><div class="x"><a href="${esc(x.url)}" target="_blank">${esc(x.descriere||(k==='tt'?(x.format==='foto'?'Postare foto':'Video'):'Reel')+' '+x.id.slice(-6))} ↗</a><div>${esc(tipOf(a.id,x))}${x.data?' · '+x.data:''}${x.fixat?' · 📌 fixat':''}${x.likeuri!=null?` · ❤ ${fmt(x.likeuri)} · 💬 ${x.comentarii} · ↗ ${fmt(x.share)}`:''}</div></div><b>${fmt(x.vizualizari)}</b></div>`).join('');
+ const pct=x=>x.toFixed(1).replace('.',',');
+ const ins=[`Mediana: <b>${fmt(Math.round(I.med))}</b> vizualizări / ${k==='tt'?'video':'reel'} (media ${fmt(Math.round(I.avg))}) ${I.avg>I.med*1.5?`— un ${k==='tt'?'video':'reel'} tipic e mult sub medie: câteva viralizează și trag media în sus.`:'— rezultate destul de constante, fără viraluri mari.'}`,
+  `Top 5 aduc <b>${pct(I.t5p)}%</b> din toate cele ${fmt(I.tot)} vizualizări.`,
+  `${I.over10k} din ${I.n} au trecut de 10K${I.zero?` · ${I.zero} au 0 vizualizări`:''}.`,
+  I.best?`Cel mai bun tip: <b>${esc(I.best.t)}</b> — media ${fmt(Math.round(I.best.avg))} vizualizări (${I.best.n} ${I.best.n===1?'postare':'postări'}). ${I.types.find(t=>t.t==='Necategorizat')?`Necategorizate: ${I.types.find(t=>t.t==='Necategorizat').n} — etichetează-le în tabelul de jos ca analiza să fie completă.`:''}`:`Nicio postare etichetată încă — alege tipul la fiecare ${k==='tt'?'video':'reel'} în tabelul de jos și aici apare ce tip a prins.`];
+ if(k==='tt'&&pe['7z'])ins.push(`Ultimele 7 zile: doar <b>${fmt(pe['7z'].vizualizari)}</b> vizualizări (${String(pe['7z'].deltaVizualizari).replace('.',',')}%) — după vârful din 28 zile (${fmt(pe['28z'].vizualizari)}), merită un post nou cât mai repede.`);
+ if(k==='ig'&&C.insights30z)ins.push(`Pe Instagram, <b>${C.insights30z.procentNonUrmaritori}%</b> din vizualizări vin de la non-urmăritori — reels-urile ajung la oameni noi, dar volumul e mic.`);
+ const types=I.types.map(t=>`<tr><td>${esc(t.t)}</td><td>${t.n}</td><td>${fmt(Math.round(t.avg))}</td></tr>`).join('');
+ const cmp=(()=>{const tt=S.conturi['tt-nevyk'],ig=S.conturi['ig-nevyk'];if(!tt||!ig)return '';const a1=sInsights('tt-nevyk',tt.video),a2=sInsights('ig-nevyk',ig.video);const r=(l,x,y)=>`<tr><td>${l}</td><td>${x}</td><td>${y}</td></tr>`;
+  return `<table class="cmp"><tr><th></th><th>🎵 TikTok</th><th>📷 Instagram</th></tr>${r('Urmăritori',fmt(tt.profil.urmaritori),fmt(ig.profil.urmaritori))}${r('Postări analizate',a1.n,a2.n)}${r('Vizualizări totale',fmt(a1.tot),fmt(a2.tot))}${r('Mediană / postare',fmt(Math.round(a1.med)),fmt(Math.round(a2.med)))}${r('Cea mai bună',fmt(a1.top[0]&&a1.top[0].vizualizari),fmt(a2.top[0]&&a2.top[0].vizualizari))}${r('Vizualizări ~30 zile',fmt(tt.perioade['28z'].vizualizari)+' (28z)',fmt(ig.insights30z.vizualizari))}</table><p class="sub" style="margin-top:10px">TikTok aduce de ~${Math.round(a1.tot/Math.max(1,a2.tot))}× mai multe vizualizări totale.</p>`})();
+ const igc=k==='ig'&&C.insights30z?(q=>`<div class="sc"><h3>📷 Insights Instagram · ultimele 30 zile</h3><div class="kp" style="margin:0">${kc('Vizualizări',fmt(q.vizualizari),`${q.procentUrmaritori}% urmăritori · ${q.procentNonUrmaritori}% non-urmăritori`)}${kc('Spectatori',fmt(q.spectatori))}${kc('Din reels',q.procentReels+'%')}${kc('Interacțiuni',fmt(q.interactiuni))}${kc('Conturi implicate',fmt(q.conturiImplicate))}${kc('Vizite profil',fmt(q.vizitariProfil))}${kc('Top reel',fmt(q.topReel&&q.topReel.vizualizari),q.topReel?'6 oct 2026':'')}</div></div>`)(C.insights30z):'';
+ const rows=I.top.map((x,i)=>`<tr><td>${i+1}</td><td><a href="${esc(x.url)}" target="_blank">${esc(x.descriere||x.id)} ↗</a>${x.fixat?' 📌':''}</td><td>${x.data||'—'}</td><td><b>${fmt(x.vizualizari)}</b></td><td><select onchange="setTip('${a.id}','${esc(x.id)}',this.value)">${TIPS.map(t=>`<option ${tipOf(a.id,x)===t?'selected':''}>${t}</option>`).join('')}</select></td></tr>`).join('');
+ v.innerHTML=`<h1>Statistici</h1><p class="sub">Actualizat: ${C.actualizat||'14 oct 2026'} · ${C.sursa||'cifre reale din TikTok Studio și Instagram'}</p>
+ <div class="accs">${A.map(c=>`<button class="acc ${c.id===SS.acc?'on':''}" onclick="SS.acc='${esc(c.id)}';render()">${avatar(c,34)}<span><b>@${esc(c.handle)}</b><small>${pk(c)==='tt'?'TikTok':'Instagram'} · ${fmt(S.conturi[c.id].profil.urmaritori)} urmăritori</small></span></button>`).join('')}</div>
+ <div class="kp">${kp}</div>
+ <div class="sc"><h3>Vizualizări pe ${k==='tt'?'video':'reel'} · top ${Math.min(30,vids.length)} (top 5 evidențiate)</h3>${sBar(a.id,vids)}</div>
+ <div class="s2"><div class="sc"><h3>🏆 Top 5</h3>${top5}</div><div class="sc"><h3>💡 Ce a prins</h3><ul class="ins">${ins.map(x=>`<li>${x}</li>`).join('')}</ul><h3 style="margin-top:14px">Media pe tip</h3><div class="vs"><table><tr><th>Tip</th><th>Nr.</th><th>Medie viz.</th></tr>${types}</table></div></div></div>
+ ${igc}<div class="s2"><div class="sc vs"><h3>⚖️ Instagram vs TikTok</h3>${cmp}</div><div class="sc"><h3>📈 Istoric urmăritori</h3>${sLine(a.id)}</div></div>
+ <div class="sc vs"><h3>Toate postările · alege tipul ca să vezi ce a prins</h3><table><tr><th>#</th><th>Postare</th><th>Data</th><th>Vizualizări</th><th>Tip</th></tr>${rows}</table></div>`}
+/* ===== De postat: produsele, sursele și clipurile gata de postat (BOT_DATA.produsePostare) ===== */
+st.depost=(st.depost&&typeof st.depost==='object'&&!Array.isArray(st.depost))?st.depost:{};
+const PP=()=>arr('produsePostare').filter(x=>x&&x.id);
+const clipsOf=p=>(Array.isArray(p.clipuri)?p.clipuri:[]).filter(c=>c&&c.id);
+// starea unui clip: ce a scris botul în data.js + bifele puse de pe acest dispozitiv (localStorage)
+const clipSt=c=>Object.assign({trimis:!!c.trimis,postat:!!c.postat,postatPe:Array.isArray(c.postatPe)?c.postatPe:[],dataPostare:c.dataPostare||''},st.depost[c.id]||{});
+const dpCount=p=>{const c=clipsOf(p).map(clipSt);return{gata:c.length,trimise:c.filter(x=>x.trimis).length,postate:c.filter(x=>x.postat).length}};
+const findClip=id=>{for(const p of PP())for(const c of clipsOf(p))if(c.id===id)return c};
+const azi=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+let DPF='toate';
+const CAPS={};const capPid=c=>{for(const p of PP())if(clipsOf(p).some(x=>x.id===c.id))return p.id;return ''};const capFolder=c=>(c.id||'').replace(/-\d+$/,'');
+function capOf(c,i){const f=capFolder(c);const BC=window.BOT_CAPTIONS||{};if(Array.isArray(BC[f])&&!(f in CAPS))CAPS[f]=BC[f];if(!(f in CAPS)){CAPS[f]=null;fetch('../postare-pc/captions/'+f+'.json').then(r=>r.ok?r.json():[]).then(l=>{CAPS[f]=Array.isArray(l)?l:[];render()}).catch(()=>{CAPS[f]=[]})}
+ const l=CAPS[f];if(!l||!l.length)return '';const x=l[i%l.length];return typeof x==='string'?x:((x.text||'')+'\n\n'+(x.hashtags||[]).join(' '))}
+window.dpCopy=(b,id)=>{const t=b.parentElement.querySelector('.txt').textContent;const ok=()=>{b.textContent='Copiat ✓';b.classList.add('ok');setTimeout(()=>{b.textContent='Copiază';b.classList.remove('ok')},1600)};
+ navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t).then(ok,()=>prompt('Copiază:',t)):prompt('Copiază:',t)};
+window.dpPlay=b=>{const v=document.createElement('video');v.src=b.dataset.src;v.controls=true;v.playsInline=true;v.autoplay=true;v.setAttribute('playsinline','');b.replaceWith(v);v.play&&v.play().catch(()=>{})};
+window.dpSet=(id,o)=>{st.depost[id]=Object.assign({},st.depost[id]||{},o);save();render()};
+window.dpToggle=id=>{const s=clipSt(findClip(id)||{id});dpSet(id,{postat:!s.postat,dataPostare:!s.postat&&!s.dataPostare?azi():s.dataPostare})};
+window.dpAcc=(id,acc)=>{const l=[...clipSt(findClip(id)||{id}).postatPe];const i=l.indexOf(acc);i<0?l.push(acc):l.splice(i,1);dpSet(id,{postatPe:l})};
+window.dpExport=()=>{const t=JSON.stringify(st.depost,null,1);const ok=()=>alert('Copiat. Trimite-l botului ca să-l treacă în data.js.');
+ navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t).then(ok,()=>prompt('Copiază:',t)):prompt('Copiază:',t)};
+function dpCard(p,i){const n=dpCount(p),pct=n.gata?Math.round(n.postate/n.gata*100):0;
+ return `<a class="dp-p" style="animation-delay:${Math.min(i,10)*35}ms" href="#/depostat/${encodeURIComponent(p.id)}"><span class="dp-ring ${p.imagine?'has-im':''}" style="--v:${pct};${p.imagine?`--im:url('${esc(p.imagine)}')`:''}"><b>${p.imagine?'':pct+'%'}</b></span><div><h3>${esc(p.nume)}</h3><div class="dp-tags"><span class="dp-t">📡 ${(p.surse||[]).length} surse</span><span class="dp-t">🎬 ${n.gata} gata</span><span class="dp-t wa">📨 ${n.trimise} ${n.trimise===1?'trimis':'trimise'}</span><span class="dp-t ok">✅ ${n.postate} ${n.postate===1?'postat':'postate'}</span></div></div></a>`}
+function dpClip(c,i){const s=clipSt(c),src=c.url||c.fisier||'',pa=ACC().filter(a=>a.produsId&&a.produsId===capPid(c)),A=pa.length?pa:ACC();
+ return `<div class="dp-c ${s.postat?'done':''}" style="animation-delay:${Math.min(i,8)*40}ms"><div class="dp-v">${src?(c.thumb?`<button class="thumbbtn" style="background-image:url('${esc(c.thumb)}')" data-src="${esc(src)}" onclick="dpPlay(this)" aria-label="Pornește clipul"><span>▶</span></button>`:`<video src="${esc(src)}" controls playsinline preload="metadata"></video>`):(c.thumb?`<div class="thumbbtn" style="background-image:url('${esc(c.thumb)}');cursor:default"></div>`:'<div class="nov">Clipul nu are încă fișier</div>')}<span class="nr">#${esc((c.id.match(/(\d+)$/)||[,i+1])[1])}</span><span class="st ${s.postat?'ok':''}">${s.postat?'✅ Postat':s.trimis?'📨 Trimis':'🎬 Gata'}</span></div>
+ <div class="dp-cb"><div><h4>${esc(c.titlu||'Clip '+(i+1))}</h4>${c.sursa?`<small>Sursă: ${/^https?:/.test(c.sursa)?`<a href="${esc(c.sursa)}" target="_blank" rel="noopener" style="text-decoration:underline">${esc((c.sursa.match(/@[^/]+/)||[c.sursa.replace(/^https?:\/\/(www\.)?/,'').slice(0,28)])[0])} ↗</a>`:esc(c.sursa)}</small>`:''}</div>
+ ${(t=>t?`<div class="dp-cap"><small>Descriere sugerată</small><span class="txt">${esc(t)}</span><button onclick="dpCopy(this)">Copiază</button></div>`:'')(capOf(c,i))}
+ <div class="dp-row">${src?`<a class="btn dp-dl" href="${esc(src)}" download>⬇ Descarcă</a>`:''}<button class="dp-tg ${s.postat?'on':''}" onclick="dpToggle('${esc(c.id)}')"><i>${s.postat?'✓':''}</i>Postat</button></div>
+ <div class="dp-acc">${A.map(a=>`<button class="${s.postatPe.includes(a.id)?'on':''}" onclick="dpAcc('${esc(c.id)}','${esc(a.id)}')">${avatar(a,22)}@${esc(a.handle)} <em style="font-style:normal;opacity:.6;font-size:10px">${pk(a).toUpperCase()}</em></button>`).join('')||'<small>Adaugă conturile în Postări.</small>'}</div>
+ <label class="dp-date">Data<input type="date" value="${esc(s.dataPostare)}" onchange="dpSet('${esc(c.id)}',{dataPostare:this.value})"></label></div></div>`}
+function renderDP(v,id){const all=PP();
+ if(id){const p=all.find(x=>x.id===id);if(!p){v.innerHTML=empty('❓','Produs inexistent');return}
+  const n=dpCount(p),cl=clipsOf(p).filter(c=>{const s=clipSt(c);return DPF==='toate'||(DPF==='postate'?s.postat:!s.postat)});
+  v.innerHTML=`<a class="back" href="#/depostat">← Toate produsele</a><div class="dp-bar"><h1>${esc(p.nume)}</h1><button class="btn" onclick="dpExport()">📋 Copiază bifele pentru bot</button></div><p class="sub" style="margin-bottom:10px">${n.gata} clipuri gata · ${n.trimise} ${n.trimise===1?'trimis':'trimise'} · ${n.postate} ${n.postate===1?'postat':'postate'}</p><div class="dp-prog"><i style="width:${n.gata?Math.round(n.postate/n.gata*100):0}%"></i></div>
+  ${(p.surse||[]).length?`<div class="dp-src">${p.surse.map(s=>`<a ${s.url?`href="${esc(s.url)}" target="_blank" rel="noopener"`:''}>${s.platforma?`<em>${esc(/tik/i.test(s.platforma)?'TT':/insta/i.test(s.platforma)?'IG':/meta|face/i.test(s.platforma)?'META':s.platforma)}</em>`:''}${esc(s.cont||s.url||'sursă')}</a>`).join('')}</div>`:''}
+  <div class="dp-f">${[['toate','Toate',n.gata],['depostat','De postat',n.gata-n.postate],['postate','Postate',n.postate]].map(([k,t,c])=>`<button class="${DPF===k?'on':''}" onclick="DPF='${k}';render()">${t} · ${c}</button>`).join('')}</div>
+  ${cl.length?`<div class="dp-g">${cl.map(dpClip).join('')}</div>`:empty('🎬',DPF==='postate'?'Niciun clip postat încă':'Niciun clip aici')}`;return}
+ const ps=all.filter(p=>!Q||JSON.stringify(p).toLowerCase().includes(Q));const T=all.map(dpCount).reduce((a,b)=>({gata:a.gata+b.gata,trimise:a.trimise+b.trimise,postate:a.postate+b.postate}),{gata:0,trimise:0,postate:0});
+ v.innerHTML=`<h1>De postat</h1><p class="sub">Produsele cu clipuri gata. Bifele „Postat” se salvează pe acest dispozitiv.</p>
+ <div class="dp-k"><div><b>${all.length}</b><span>produse</span></div><div><b>${T.gata}</b><span>clipuri gata</span></div><div><b>${T.trimise}</b><span>trimise</span></div><div><b>${T.postate}</b><span>postate</span></div></div>
+ ${ps.length?`<div class="dp-list">${ps.map(dpCard).join('')}</div>`:empty('🚀','Niciun produs de postat')}`}
+/* ===== Structura v3: Produse (conturi + clipuri) și Competitori (reclame, organic, magazine) ===== */
+const ALLP=()=>{const m=new Map();D.produse.forEach(p=>m.set(p.id,Object.assign({},p)));PP().forEach(p=>m.set(p.id,Object.assign({},m.get(p.id)||{},p)));return[...m.values()]};
+const accsOf=pid=>ACC().filter(a=>a.produsId===pid);
+const ORG=()=>arr('competitoriOrganic').filter(x=>x&&x.id);
+const compOf=pid=>({reclame:D.reclame.filter(r=>!pid||r.produsId===pid),organic:ORG().filter(o=>!pid||o.produsId===pid),magazine:D.competitori.filter(c=>!pid||c.produsId===pid)});
+const compN=pid=>{const c=compOf(pid);return c.reclame.length+c.organic.length+c.magazine.length};
+const profUrl=a=>a.url||(pk(a)==='tt'?'https://www.tiktok.com/@'+a.handle:'https://www.instagram.com/'+a.handle+'/');
+let PT='clipuri',CT='reclame',CP='';
+function prodCard(p,i){const n=dpCount(p),A=accsOf(p.id),pct=n.gata?Math.round(n.postate/n.gata*100):0,c=compN(p.id);
+ return `<a class="p3" style="animation-delay:${Math.min(i,12)*30}ms" href="#/produs/${encodeURIComponent(p.id)}"><div class="p3-img" ${p.imagine?`style="background-image:url('${esc(p.imagine)}')"`:''}>${p.imagine?'':'<span>📦</span>'}${n.gata?`<b class="p3-n">${n.gata} clipuri</b>`:''}</div>
+ <div class="p3-b"><h3>${esc(p.nume)}</h3><div class="p3-acc">${A.length?A.map(a=>avatar(a,22)).join(''):'<small>Fără conturi încă</small>'}</div>
+ <div class="dp-prog" style="margin:4px 0 2px"><i style="width:${pct}%"></i></div><div class="p3-m"><span><b>${n.postate}</b>/${n.gata} postate</span><span>🥊 <b>${c}</b> competitori</span></div></div></a>`}
+function accRow(p){const A=accsOf(p.id);
+ return `<div class="p3-accs">${A.map(a=>`<a class="acc" target="_blank" rel="noopener" href="${esc(profUrl(a))}">${avatar(a,30)}<span><b>@${esc(a.handle)}</b><small>${pk(a)==='tt'?'TikTok':'Instagram'}</small></span><button class="ed" onclick="event.preventDefault();event.stopPropagation();accModal('${esc(a.id)}')">✎</button></a>`).join('')}<button class="addacc" onclick="accModal(null,'${esc(p.id)}')">＋ Cont Instagram / TikTok</button></div>`}
+function clipsBlock(p){const n=dpCount(p),cl=clipsOf(p).filter(c=>{const s=clipSt(c);return DPF==='toate'||(DPF==='postate'?s.postat:!s.postat)});
+ if(!n.gata)return empty('🎬','Încă nu sunt clipuri gata pentru produsul ăsta');
+ return `<div class="dp-bar"><div class="dp-f" style="margin:0">${[['toate','Toate',n.gata],['depostat','De postat',n.gata-n.postate],['postate','Postate',n.postate]].map(([k,t,c])=>`<button class="${DPF===k?'on':''}" onclick="DPF='${k}';render()">${t} · ${c}</button>`).join('')}</div><button class="btn" onclick="dpExport()">📋 Copiază bifele pentru bot</button></div><div style="height:14px"></div>
+ ${cl.length?`<div class="dp-g">${cl.map(dpClip).join('')}</div>`:empty('🎬',DPF==='postate'?'Niciun clip postat încă':'Niciun clip aici')}`}
+function orgCard(o,showProd=true){const tops=Array.isArray(o.topVideo)?o.topVideo:[];
+ return `<div class="ad"><div><div class="adh">${showProd?chip(o.produsId):''}<span class="adv">@${esc(o.handle||o.nume||'')}</span><span class="bd">${esc(/tik/i.test(o.platforma||'')?'TikTok':/insta/i.test(o.platforma||'')?'Instagram':(o.platforma||''))}</span>${o.urmaritori!=null?`<span class="bd"><b>${fmtK(o.urmaritori)}</b> urmăritori</span>`:''}${o.tara?flag(o.tara):''}</div>
+ ${o.nota?`<div class="hook">${esc(o.nota)}</div>`:''}<div class="meta">${o.postariPeSaptamana!=null?`<span>📅 <b>${o.postariPeSaptamana}</b> postări/săpt.</span>`:''}${o.vizualizariMedii!=null?`<span>👁 <b>${fmtK(o.vizualizariMedii)}</b> vizualizări medii</span>`:''}${o.vindeProdus?`<span>🛒 vinde produsul</span>`:''}${o.actualizat?`<span>actualizat ${esc(o.actualizat)}</span>`:''}</div>
+ ${tops.length?`<div class="org-top">${tops.slice(0,4).map(t=>`<a target="_blank" rel="noopener" href="${esc(t.url)}"><b>${t.vizualizari!=null?fmtK(t.vizualizari):'▶'}</b>${esc((t.descriere||'').slice(0,60))}</a>`).join('')}</div>`:''}</div>
+ <div class="acts">${o.url?`<a class="btn pri" target="_blank" rel="noopener" href="${esc(o.url)}">Profil ↗</a>`:''}${o.linkMagazin?`<a class="btn" target="_blank" rel="noopener" href="${esc(o.linkMagazin)}">Magazin ↗</a>`:''}</div></div>`}
+function compBlock(pid,showProd){const C=compOf(pid),q=x=>match(x);const L={reclame:C.reclame.filter(q),organic:C.organic.filter(q),magazine:C.magazine.filter(q)};
+ const tabs=[['reclame','📣 Reclame active',L.reclame.length],['organic','🌱 Organic',L.organic.length],['magazine','🏪 Magazine',L.magazine.length]];
+ return `<div class="tabs">${tabs.map(([k,t,c])=>`<button class="tab ${CT===k?'on':''}" onclick="CT='${k}';render()">${t} <span style="opacity:.6">${c}</span></button>`).join('')}</div>
+ ${CT==='reclame'?(L.reclame.length?L.reclame.sort((a,b)=>(days(b.dataStart)||0)-(days(a.dataStart)||0)).map(r=>adRow(r,showProd)).join(''):empty('📣','Nicio reclamă activă găsită')):CT==='organic'?(L.organic.length?L.organic.sort((a,b)=>(b.urmaritori||0)-(a.urmaritori||0)).map(o=>orgCard(o,showProd)).join(''):empty('🌱','Niciun cont organic adăugat încă')):compTable(L.magazine,showProd)}`}
+function renderProd(v,id){const p=ALLP().find(x=>x.id===id);if(!p){v.innerHTML=empty('❓','Produs inexistent');return}
+ const n=dpCount(p),c=compN(p.id);
+ v.innerHTML=`<a class="back" href="#/produse">← Toate produsele</a><div class="hero p3-hero"><div class="pimg" ${img(p)}>${p.imagine?'':'<div class="ph">📦</div>'}</div><div>${p.brand?`<span class="bd">${esc(p.brand)}</span>`:''}<h1 style="margin-top:10px">${esc(p.nume)}</h1>${p.pret!=null?`<div class="price" style="font-size:22px">${money(p.pret,p.moneda)}${p.pretVechi?`<s>${money(p.pretVechi,p.moneda)}</s>`:''}</div>`:''}${p.descriere?`<p class="sub" style="margin-top:10px">${esc(p.descriere)}</p>`:''}
+ <div class="p3-lbl">Conturile produsului</div>${accRow(p)}
+ <div class="stats"><div class="st"><b>${n.gata}</b><span>clipuri gata</span></div><div class="st"><b>${n.trimise}</b><span>${n.trimise===1?'trimis':'trimise'}</span></div><div class="st"><b>${n.postate}</b><span>${n.postate===1?'postat':'postate'}</span></div><div class="st"><b>${c}</b><span>competitori</span></div></div>${p.url?`<a class="btn" style="margin-top:14px" target="_blank" rel="noopener" href="${esc(p.url)}">Vezi pe site ↗</a>`:''}</div></div>
+ <div class="ptabs">${[['clipuri','🎬 Clipuri'],['competitori','🥊 Competitori'],['surse','📡 Surse']].map(([k,t])=>`<button class="ptab ${PT===k?'on all':''}" onclick="PT='${k}';render()">${t}</button>`).join('')}</div>
+ ${PT==='clipuri'?clipsBlock(p):PT==='competitori'?compBlock(p.id,false):((p.surse||[]).length?`<div class="dp-src">${p.surse.map(s=>`<a ${s.url?`href="${esc(s.url)}" target="_blank" rel="noopener"`:''}><em>${esc(/tik/i.test(s.platforma||'')?'TT':/insta/i.test(s.platforma||'')?'IG':'META')}</em>${esc(s.cont||s.url||'sursă')}</a>`).join('')}</div>`:empty('📡','Nicio sursă încă'))}`}
+function renderProduse(v){const ps=ALLP().filter(p=>!Q||JSON.stringify(p).toLowerCase().includes(Q));const T=ps.map(dpCount).reduce((a,b)=>({gata:a.gata+b.gata,trimise:a.trimise+b.trimise,postate:a.postate+b.postate}),{gata:0,trimise:0,postate:0});
+ v.innerHTML=`<h1>Produse</h1><p class="sub">Intră pe un produs: clipurile lui, conturile lui de Instagram și TikTok, competitorii.</p>
+ <div class="dp-k"><div><b>${ps.length}</b><span>produse</span></div><div><b>${T.gata}</b><span>clipuri gata</span></div><div><b>${T.trimise}</b><span>trimise</span></div><div><b>${T.postate}</b><span>postate</span></div></div>
+ ${ps.length?`<div class="p3-grid">${ps.map(prodCard).join('')}</div>`:empty('📦','Niciun produs')}`}
+function renderComp(v){const ps=ALLP();const pid=ps.some(p=>p.id===CP)?CP:'';
+ v.innerHTML=`<h1>Competitori</h1><p class="sub">Separat de produsele noastre: cine rulează reclame, cine crește organic și ce magazine vând același lucru.</p>
+ <div class="dp-f"><button class="${!pid?'on':''}" onclick="CP='';render()">Toate produsele</button>${ps.filter(p=>compN(p.id)).map(p=>`<button class="${pid===p.id?'on':''}" onclick="CP='${esc(p.id)}';render()">${esc(p.nume)} · ${compN(p.id)}</button>`).join('')}</div>
+ ${compBlock(pid,!pid)}`}
+function render(){const h=(location.hash||'#/produse').slice(2).split('/');const v=document.getElementById('view');let k=h[0];
+ const by=(k,pid)=>D[k].filter(x=>(!pid||x.produsId===pid)&&match(x));
+ if(k==='depostat'){location.replace(h[1]?'#/produs/'+h[1]:'#/produse');return}
+ if(k==='produs'){nav('produse');renderProd(v,decodeURIComponent(h[1]||''));return}
+ if(k==='produs'){const p=prod(decodeURIComponent(h[1]||''));nav('produse');if(!p){v.innerHTML=empty('❓','Produs inexistent');return}
+  const L={reclame:by('reclame',p.id),competitori:by('competitori',p.id),video:by('video',p.id)};
+  v.innerHTML=`<a class="back" href="#/produse">← Toate produsele</a><div class="hero"><div class="pimg" ${img(p)}>${p.imagine?'':'<div class="ph">👕</div>'}</div><div><span class="bd">${esc(p.brand)}</span><h1 style="margin-top:10px">${esc(p.nume)}</h1><div class="price" style="font-size:24px">${money(p.pret,p.moneda)}${p.pretVechi?`<s>${money(p.pretVechi,p.moneda)}</s>`:''}</div><p class="sub" style="margin-top:10px">${esc(p.descriere)}</p>${p.url?`<a class="btn pri" target="_blank" href="${esc(p.url)}">Vezi pe site ↗</a>`:''}<div class="stats"><div class="st"><b>${L.reclame.length}</b><span>reclame</span></div><div class="st"><b>${L.competitori.length}</b><span>competitori</span></div><div class="st"><b>${L.video.length}</b><span>video-uri</span></div></div></div></div>
+  <div class="tabs">${[['reclame','📣 Reclame'],['competitori','🥊 Competitori'],['video','🎬 Video-uri'],['note','📝 Note']].map(([t,n])=>`<button class="tab ${tab===t?'on':''}" onclick="tab='${t}';render()">${n}</button>`).join('')}</div>
+  <div>${tab==='reclame'?(L.reclame.length?L.reclame.map(r=>adRow(r,false)).join(''):empty('📣','Nicio reclamă')):tab==='competitori'?compTable(L.competitori,false):tab==='video'?videoGrid(L.video):notesBox(p.id)}</div>`;return}
+ if(!navs.find(n=>n[0]===k))k='produse';nav(k);
+ if(k==='produse'){renderProduse(v);return}
+ if(k==='produse_vechi'){const ps=D.produse.filter(p=>!Q||JSON.stringify(p).toLowerCase().includes(Q));v.innerHTML=`<h1>Produse</h1><p class="sub">Apasă pe un produs ca să vezi reclamele, competitorii și video-urile lui.</p>${ps.length?`<div class="grid">${ps.map(productCard).join('')}</div>`:empty('📦','Niciun produs')}`}
+ if(k==='reclame'){const l=by('reclame').sort((a,b)=>(days(b.dataStart)||0)-(days(a.dataStart)||0));v.innerHTML=`<h1>Reclame</h1><p class="sub">${l.length} reclame active · sortate după câte zile rulează</p>${l.length?l.map(r=>adRow(r)).join(''):empty('📣','Nicio reclamă')}`}
+ if(k==='competitori'){renderComp(v);return}
+ if(k==='competitori_vechi'){v.innerHTML=`<h1>Competitori</h1><p class="sub">Cine mai vinde produse asemănătoare în Europa</p>${compTable(by('competitori'))}`}
+ if(k==='video'){const l=by('video').sort((a,b)=>(b.likeuri||0)-(a.likeuri||0));v.innerHTML=`<h1>Video-uri</h1><p class="sub">${l.length} video-uri salvate · apasă ca să rulezi</p>${videoGrid(l)}`}
+ if(k==='postari'){renderPost(v)}
+ if(k==='statistici'){renderStats(v)}
+ if(k==='note'){v.innerHTML=`<h1>Note</h1><p class="sub">Toate notițele tale</p>${notesBox('')}`}
+ const nt=document.getElementById('nt');if(nt)nt.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();e.target.nextElementSibling.click()}}}
+let to;document.getElementById('q').oninput=e=>{clearTimeout(to);to=setTimeout(()=>{Q=e.target.value.trim().toLowerCase();render()},150)};
+addEventListener('hashchange',()=>{tab='reclame';PT='clipuri';DPF='toate';render();document.getElementById('view').scrollTop=0});
+addEventListener('keydown',e=>{if(e.key==='Escape')closeM()});
+render();
+</script></body></html>
