@@ -415,7 +415,7 @@ function capOf(c,i){const f=capFolder(c);const BC=window.BOT_CAPTIONS||{};if(Arr
  const l=CAPS[f];if(!l||!l.length)return '';const x=l[i%l.length];return typeof x==='string'?x:((x.text||'')+'\n\n'+(x.hashtags||[]).join(' '))}
 const clipNr=c=>{const m=(c.id||'').match(/(\d+)$/);return m?parseInt(m[1],10)-1:0};
 const txList=c=>{if(Array.isArray(c.textPeEcran)&&c.textPeEcran.length)return c.textPeEcran;if(c.textPeEcran)return[c.textPeEcran];const T=window.BOT_TEXTE||{};return T[capFolder(c)]||T[capPid(c)]||[]};
-const TXO={};const txOf=c=>{const l=txList(c);return l.length?l[(clipNr(c)+(TXO[c.id]||0))%l.length]:''};
+const TXO={};const txOf=c=>{const l=txList(c);return l.length?l[(clipNr(c)+3+(TXO[c.id]||0))%l.length]:''};
 window.dpDl=(b,id)=>{const d=azi();st.depost[id]=Object.assign({},st.depost[id]||{},{descarcat:d});save();
  b.classList.add('done');b.innerHTML='✓ Descărcat <small>'+d.slice(8,10)+'.'+d.slice(5,7)+'</small>';const c=b.closest('.dp-c');if(c&&!c.querySelector('.dlb')){const t=document.createElement('span');t.className='dlb';t.textContent='⬇ Descărcat';c.querySelector('.dp-v').appendChild(t)}};
 window.dpAlt=(b,id)=>{const c=findClip(id);if(!c)return;TXO[id]=(TXO[id]||0)+1;const box=b.closest('.dp-ix');const t=box.querySelector('.txt');t.textContent=txOf(c);box.classList.remove('flip');void box.offsetWidth;box.classList.add('flip')};
