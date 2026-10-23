@@ -223,12 +223,33 @@ header{border-bottom:1px solid var(--b);background:rgba(11,11,10,.85);backdrop-f
 .org-top a b{font-family:"Geist Mono",monospace;color:var(--a);font-size:11.5px}
 .ptab.on.all{background:var(--a);color:var(--ink);border-color:var(--a)}
 @media(max-width:760px){.p3-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.p3-b{padding:10px}.p3-b h3{font-size:13.5px}.p3-m{flex-direction:column;gap:2px;font-size:11px}.ptabs{overflow-x:auto}.ptab{flex:none}}
+
+/* ===== Idei pentru clip: text pe ecran + descriere ===== */
+.dp-idei{display:grid;gap:8px}
+.dp-ix{position:relative;border-radius:12px;border:1px solid var(--b);background:#11110f;padding:10px 12px 10px}
+.dp-ix small{display:flex;align-items:center;gap:6px;flex-wrap:wrap;color:var(--m);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.dp-ix small em{font-style:normal;text-transform:none;letter-spacing:0;font-weight:500;font-size:10.5px;padding:2px 6px;border-radius:6px;background:#1d1c19;color:#a9a597}
+.dp-ecran{position:relative;display:grid;place-items:center;min-height:86px;padding:14px 12px;border-radius:9px;overflow:hidden;
+ background:radial-gradient(120% 90% at 50% 0%,rgba(212,255,63,.07),transparent 60%),repeating-linear-gradient(135deg,#151512 0 8px,#121210 8px 16px)}
+.dp-ecran .txt{display:inline-block;max-width:92%;text-align:center;background:#fff;color:#0b0b0a;font:650 14px/1.3 "Geist",system-ui,sans-serif;letter-spacing:-.01em;padding:7px 11px;border-radius:9px;box-shadow:0 6px 18px rgba(0,0,0,.45)}
+.dp-ix.flip .dp-ecran .txt{animation:dpflip .35s cubic-bezier(.2,.8,.2,1)}
+@keyframes dpflip{from{opacity:0;transform:translateY(6px) scale(.97)}to{opacity:1;transform:none}}
+.dp-ix--desc .txt{display:block;font-size:12.5px;line-height:1.5;color:#d6d3c8;white-space:pre-wrap}
+.dp-ib{display:flex;gap:6px;justify-content:flex-end;margin-top:8px}
+.dp-ib button{font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:8px;background:#1e1d1a;border:1px solid var(--b);min-height:32px}
+.dp-ib button:hover{border-color:#3b3a32}.dp-ib button.ok{background:var(--a);color:var(--ink);border-color:var(--a)}
+@media(prefers-reduced-motion:reduce){.dp-ix.flip .dp-ecran .txt{animation:none}}
+
+.dp-dl.done{background:rgba(212,255,63,.1);border-color:rgba(212,255,63,.45);color:var(--a)}
+.dp-dl.done small{font-family:"Geist Mono",monospace;font-size:11px;opacity:.75;margin-left:2px}
+.dp-v .dlb{position:absolute;right:10px;bottom:10px;font:700 11px/1 "Geist",sans-serif;padding:5px 8px;border-radius:7px;background:var(--a);color:var(--ink);pointer-events:none}
 </style></head><body>
 <aside><div class="logo"><i>📡</i>Radar</div><div id="nav"></div></aside>
 <main><header><div class="search">🔍<input id="q" placeholder="Caută produs, advertiser, hook, autor…"></div><div style="flex:1"></div><button class="btn pri" onclick="addProduct()">＋ Produs</button></header><div id="view"></div></main>
 <div class="modal" id="modal" onclick="if(event.target===this)closeM()"><div class="mbox" id="mbox"></div></div>
 <script src="data.js"></script>
 <script src="captions.js"></script>
+<script src="texte.js"></script>
 <script>
 const KEY='tracker-v3';
 let st={};try{st=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){st={}}
@@ -392,7 +413,13 @@ let DPF='toate';
 const CAPS={};const capPid=c=>{for(const p of PP())if(clipsOf(p).some(x=>x.id===c.id))return p.id;return ''};const capFolder=c=>(c.id||'').replace(/-\d+$/,'');
 function capOf(c,i){const f=capFolder(c);const BC=window.BOT_CAPTIONS||{};if(Array.isArray(BC[f])&&!(f in CAPS))CAPS[f]=BC[f];if(!(f in CAPS)){CAPS[f]=null;fetch('../postare-pc/captions/'+f+'.json').then(r=>r.ok?r.json():[]).then(l=>{CAPS[f]=Array.isArray(l)?l:[];render()}).catch(()=>{CAPS[f]=[]})}
  const l=CAPS[f];if(!l||!l.length)return '';const x=l[i%l.length];return typeof x==='string'?x:((x.text||'')+'\n\n'+(x.hashtags||[]).join(' '))}
-window.dpCopy=(b,id)=>{const t=b.parentElement.querySelector('.txt').textContent;const ok=()=>{b.textContent='Copiat ✓';b.classList.add('ok');setTimeout(()=>{b.textContent='Copiază';b.classList.remove('ok')},1600)};
+const clipNr=c=>{const m=(c.id||'').match(/(\d+)$/);return m?parseInt(m[1],10)-1:0};
+const txList=c=>{if(Array.isArray(c.textPeEcran)&&c.textPeEcran.length)return c.textPeEcran;if(c.textPeEcran)return[c.textPeEcran];const T=window.BOT_TEXTE||{};return T[capFolder(c)]||T[capPid(c)]||[]};
+const TXO={};const txOf=c=>{const l=txList(c);return l.length?l[(clipNr(c)+(TXO[c.id]||0))%l.length]:''};
+window.dpDl=(b,id)=>{const d=azi();st.depost[id]=Object.assign({},st.depost[id]||{},{descarcat:d});save();
+ b.classList.add('done');b.innerHTML='✓ Descărcat <small>'+d.slice(8,10)+'.'+d.slice(5,7)+'</small>';const c=b.closest('.dp-c');if(c&&!c.querySelector('.dlb')){const t=document.createElement('span');t.className='dlb';t.textContent='⬇ Descărcat';c.querySelector('.dp-v').appendChild(t)}};
+window.dpAlt=(b,id)=>{const c=findClip(id);if(!c)return;TXO[id]=(TXO[id]||0)+1;const box=b.closest('.dp-ix');const t=box.querySelector('.txt');t.textContent=txOf(c);box.classList.remove('flip');void box.offsetWidth;box.classList.add('flip')};
+window.dpCopy=(b,id)=>{const t=(b.closest('.dp-ix,.dp-cap')||b.parentElement).querySelector('.txt').textContent;const ok=()=>{b.textContent='Copiat ✓';b.classList.add('ok');setTimeout(()=>{b.textContent='Copiază';b.classList.remove('ok')},1600)};
  navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t).then(ok,()=>prompt('Copiază:',t)):prompt('Copiază:',t)};
 window.dpPlay=b=>{const v=document.createElement('video');v.src=b.dataset.src;v.controls=true;v.playsInline=true;v.autoplay=true;v.setAttribute('playsinline','');b.replaceWith(v);v.play&&v.play().catch(()=>{})};
 window.dpSet=(id,o)=>{st.depost[id]=Object.assign({},st.depost[id]||{},o);save();render()};
@@ -403,10 +430,10 @@ window.dpExport=()=>{const t=JSON.stringify(st.depost,null,1);const ok=()=>alert
 function dpCard(p,i){const n=dpCount(p),pct=n.gata?Math.round(n.postate/n.gata*100):0;
  return `<a class="dp-p" style="animation-delay:${Math.min(i,10)*35}ms" href="#/depostat/${encodeURIComponent(p.id)}"><span class="dp-ring ${p.imagine?'has-im':''}" style="--v:${pct};${p.imagine?`--im:url('${esc(p.imagine)}')`:''}"><b>${p.imagine?'':pct+'%'}</b></span><div><h3>${esc(p.nume)}</h3><div class="dp-tags"><span class="dp-t">📡 ${(p.surse||[]).length} surse</span><span class="dp-t">🎬 ${n.gata} gata</span><span class="dp-t wa">📨 ${n.trimise} ${n.trimise===1?'trimis':'trimise'}</span><span class="dp-t ok">✅ ${n.postate} ${n.postate===1?'postat':'postate'}</span></div></div></a>`}
 function dpClip(c,i){const s=clipSt(c),src=c.url||c.fisier||'',pa=ACC().filter(a=>a.produsId&&a.produsId===capPid(c)),A=pa.length?pa:ACC();
- return `<div class="dp-c ${s.postat?'done':''}" style="animation-delay:${Math.min(i,8)*40}ms"><div class="dp-v">${src?(c.thumb?`<button class="thumbbtn" style="background-image:url('${esc(c.thumb)}')" data-src="${esc(src)}" onclick="dpPlay(this)" aria-label="Pornește clipul"><span>▶</span></button>`:`<video src="${esc(src)}" controls playsinline preload="metadata"></video>`):(c.thumb?`<div class="thumbbtn" style="background-image:url('${esc(c.thumb)}');cursor:default"></div>`:'<div class="nov">Clipul nu are încă fișier</div>')}<span class="nr">#${esc((c.id.match(/(\d+)$/)||[,i+1])[1])}</span><span class="st ${s.postat?'ok':''}">${s.postat?'✅ Postat':s.trimis?'📨 Trimis':'🎬 Gata'}</span></div>
+ return `<div class="dp-c ${s.postat?'done':''}" style="animation-delay:${Math.min(i,8)*40}ms"><div class="dp-v">${src?(c.thumb?`<button class="thumbbtn" style="background-image:url('${esc(c.thumb)}')" data-src="${esc(src)}" onclick="dpPlay(this)" aria-label="Pornește clipul"><span>▶</span></button>`:`<video src="${esc(src)}" controls playsinline preload="metadata"></video>`):(c.thumb?`<div class="thumbbtn" style="background-image:url('${esc(c.thumb)}');cursor:default"></div>`:'<div class="nov">Clipul nu are încă fișier</div>')}<span class="nr">#${esc((c.id.match(/(\d+)$/)||[,i+1])[1])}</span>${(st.depost[c.id]||{}).descarcat?'<span class="dlb">⬇ Descărcat</span>':''}<span class="st ${s.postat?'ok':''}">${s.postat?'✅ Postat':s.trimis?'📨 Trimis':'🎬 Gata'}</span></div>
  <div class="dp-cb"><div><h4>${esc(c.titlu||'Clip '+(i+1))}</h4>${c.sursa?`<small>Sursă: ${/^https?:/.test(c.sursa)?`<a href="${esc(c.sursa)}" target="_blank" rel="noopener" style="text-decoration:underline">${esc((c.sursa.match(/@[^/]+/)||[c.sursa.replace(/^https?:\/\/(www\.)?/,'').slice(0,28)])[0])} ↗</a>`:esc(c.sursa)}</small>`:''}</div>
- ${(t=>t?`<div class="dp-cap"><small>Descriere sugerată</small><span class="txt">${esc(t)}</span><button onclick="dpCopy(this)">Copiază</button></div>`:'')(capOf(c,i))}
- <div class="dp-row">${src?`<a class="btn dp-dl" href="${esc(src)}" download>⬇ Descarcă</a>`:''}<button class="dp-tg ${s.postat?'on':''}" onclick="dpToggle('${esc(c.id)}')"><i>${s.postat?'✓':''}</i>Postat</button></div>
+ ${((tx,ds)=>tx||ds?`<div class="dp-idei">${tx?`<div class="dp-ix dp-ix--ecran"><small>💬 Idee text pe ecran <em>doar idee, nu e pe video</em></small><div class="dp-ecran"><span class="txt">${esc(tx)}</span></div><div class="dp-ib">${txList(c).length>1?`<button onclick="dpAlt(this,'${esc(c.id)}')">↻ Altă idee</button>`:''}<button onclick="dpCopy(this)">Copiază</button></div></div>`:''}${ds?`<div class="dp-ix dp-ix--desc"><small>📝 Descriere</small><span class="txt">${esc(ds)}</span><div class="dp-ib"><button onclick="dpCopy(this)">Copiază</button></div></div>`:''}</div>`:'')(txOf(c),c.descriere||capOf(c,clipNr(c)))}
+ <div class="dp-row">${src?((dl=>`<a class="btn dp-dl ${dl?'done':''}" href="${esc(src)}" download onclick="dpDl(this,'${esc(c.id)}')">${dl?`✓ Descărcat <small>${dl.slice(8,10)}.${dl.slice(5,7)}</small>`:'⬇ Descarcă'}</a>`)((st.depost[c.id]||{}).descarcat)):''}<button class="dp-tg ${s.postat?'on':''}" onclick="dpToggle('${esc(c.id)}')"><i>${s.postat?'✓':''}</i>Postat</button></div>
  <div class="dp-acc">${A.map(a=>`<button class="${s.postatPe.includes(a.id)?'on':''}" onclick="dpAcc('${esc(c.id)}','${esc(a.id)}')">${avatar(a,22)}@${esc(a.handle)} <em style="font-style:normal;opacity:.6;font-size:10px">${pk(a).toUpperCase()}</em></button>`).join('')||'<small>Adaugă conturile în Postări.</small>'}</div>
  <label class="dp-date">Data<input type="date" value="${esc(s.dataPostare)}" onchange="dpSet('${esc(c.id)}',{dataPostare:this.value})"></label></div></div>`}
 function renderDP(v,id){const all=PP();
